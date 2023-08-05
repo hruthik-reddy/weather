@@ -1,4 +1,4 @@
-package global.x.weather
+package global.x.weather.app.screen.home
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import global.x.weather.ui.theme.XWeatherTheme
+import global.x.weather.app.framework.theme.XWeatherTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

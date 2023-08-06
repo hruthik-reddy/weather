@@ -1,4 +1,4 @@
-package global.x.weather.app.framework.theme
+package global.x.weather.presentation.framework.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

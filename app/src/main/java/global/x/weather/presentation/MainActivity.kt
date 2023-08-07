@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import global.x.weather.presentation.framework.theme.XWeatherTheme
 import global.x.weather.presentation.screen.home.HomeScreen
+import global.x.weather.presentation.screen.home.HomeViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -27,6 +30,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val mainViewModel: MainViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,39 +43,34 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold {
-                        HomeScreen(paddingValues = it)
+                        Content(paddingValues = it)
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-private fun Screen() {
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun Content() {
-    Scaffold {
-        HomeScreen(paddingValues = it)
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun Content(paddingValues: PaddingValues) {
+        Scaffold(modifier = Modifier.padding(paddingValues)) {
+            HomeScreen(onFetchTapped = homeViewModel::onFetchWeatherData, paddingValues = it)
+        }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    @Composable
+    fun Greeting(name: String, modifier: Modifier = Modifier) {
+        Text(
+            text = "Hello $name!",
+            modifier = modifier
+        )
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    XWeatherTheme {
-        Greeting("Android")
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview() {
+        XWeatherTheme {
+            Greeting("Android")
+        }
     }
 }

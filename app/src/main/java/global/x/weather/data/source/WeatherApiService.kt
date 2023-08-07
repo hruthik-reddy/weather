@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 
 interface WeatherApiService {
 //    @GET("/weather")
-    suspend fun getWeatherData(city:String): Response<String>
+    suspend fun getWeatherData(city:String): String
 }

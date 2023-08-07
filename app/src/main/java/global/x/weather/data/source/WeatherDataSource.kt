@@ -1,6 +1,10 @@
 package global.x.weather.data.source
 
-class WeatherDataSource {
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class WeatherDataSource @Inject constructor(){
     private val weatherApiService: WeatherApiService?
 
     init {

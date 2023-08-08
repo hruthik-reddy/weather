@@ -1,5 +1,7 @@
 package global.x.weather.data.source
 
+import android.util.Log
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,6 +12,8 @@ import javax.inject.Singleton
 class WeatherDataSource @Inject constructor() {
     companion object {
         const val TEST_BASE_URL = "https://jsonplaceholder.typicode.com/"
+        const val API_BASE_URL = "https://api.weatherapi.com/v1/"
+        const val API_KEY = ""
     }
 
     private val weatherApiService: WeatherApiService
@@ -17,9 +21,18 @@ class WeatherDataSource @Inject constructor() {
 
     init {
         val okHttpClientBuilder = OkHttpClient.Builder()
-        httpClient = okHttpClientBuilder.build()
+        httpClient = okHttpClientBuilder.addNetworkInterceptor(Interceptor { chain ->
+            with(chain.request()) {
+                chain.proceed(
+                    this.newBuilder().url(
+                        this.url.newBuilder()
+                            .addQueryParameter("key", API_KEY).build()
+                    ).build()
+                )
+            }
+        }).build()
         val retrofit = Retrofit.Builder()
-            .baseUrl(TEST_BASE_URL)
+            .baseUrl(API_BASE_URL)
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -27,7 +40,13 @@ class WeatherDataSource @Inject constructor() {
     }
 
     suspend fun fetchWeatherData(city: String): String {
-        val response = weatherApiService.getWeatherData()
-        return response.body()?.body ?: "Empty body"
+        val response = weatherApiService.getWeatherData("Pokhara")
+        Log.e("API Response", response.body().toString())
+        if (response.isSuccessful) {
+            Log.e("API Response Success", response.message())
+        } else {
+            Log.e("API Response Failed", response.errorBody().toString())
+        }
+        return response.body()?.location?.country ?: "Null"
     }
 }

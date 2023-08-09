@@ -6,7 +6,8 @@ data class LocationApiModel(
     val name:String,
     val region: String,
     val country: String,
-    val localtime: String,
+    @SerializedName("localtime")
+    val localTime: String,
     @SerializedName("localtime_epoch")
-    val localtimeEpoch: Long
+    val localTimeEpoch: Long
 )

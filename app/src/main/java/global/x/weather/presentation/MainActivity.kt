@@ -15,11 +15,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 import global.x.weather.presentation.framework.theme.XWeatherTheme
 import global.x.weather.presentation.screen.home.HomeScreen
@@ -59,7 +57,12 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Content(paddingValues: PaddingValues) {
         Scaffold(modifier = Modifier.padding(paddingValues)) {
-            HomeScreen(onFetchTapped = homeViewModel::onFetchWeatherData, paddingValues = it, textState = homeViewModel.testString.observeAsState())
+            HomeScreen(
+                onFetchCurrentWeather = homeViewModel::onFetchCurrentWeatherData,
+                onFetchForecastedWeather = homeViewModel::onFetchForecastedWeatherData,
+                paddingValues = it,
+                textState = homeViewModel.testString.observeAsState()
+            )
         }
     }
 

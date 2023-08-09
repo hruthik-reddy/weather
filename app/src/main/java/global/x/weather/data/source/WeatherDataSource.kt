@@ -1,10 +1,12 @@
 package global.x.weather.data.source
 
-import android.util.Log
+import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.WeatherData
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,14 +41,30 @@ class WeatherDataSource @Inject constructor() {
         weatherApiService = retrofit.create(WeatherApiService::class.java)
     }
 
-    suspend fun fetchWeatherData(city: String): String {
-        val response = weatherApiService.getWeatherData("Pokhara")
-        Log.e("API Response", response.body().toString())
+    suspend fun getCurrentWeatherData(city: String): Outcome<WeatherData.Daily> {
+        val response = weatherApiService.getCurrentWeatherData(city)
         if (response.isSuccessful) {
-            Log.e("API Response Success", response.message())
+            response.body()?.toWeatherData()?.let {
+                return Outcome.Success(it)
+            }
         } else {
-            Log.e("API Response Failed", response.errorBody().toString())
+            return Outcome.Error(Exception(response.errorBody().toString()))
         }
-        return response.body()?.location?.country ?: "Null"
+        return Outcome.Error(Exception("Unknown error"))
+    }
+
+    suspend fun getHourlyForecastData(
+        city: String,
+        noOfDays: Int
+    ): Outcome<List<WeatherData.Daily>> {
+        val response = weatherApiService.getHourlyForecastData(city, noOfDays)
+        if (response.isSuccessful) {
+            response.body()?.toForecastData()?.let {
+                return Outcome.Success(it)
+            }
+        } else {
+            return Outcome.Error(Exception(response.errorBody().toString()))
+        }
+        return Outcome.Error(Exception("Unknown error"))
     }
 }

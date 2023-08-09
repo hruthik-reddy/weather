@@ -2,7 +2,7 @@ package global.x.weather.data.source.models
 
 import com.google.gson.annotations.SerializedName
 
-data class WeatherDataApiModel(
+data class WeatherDetailApiModel(
     @SerializedName("last_updated_epoch")
     val updatedAtEpoch: Long,
     @SerializedName("last_updated")
@@ -15,12 +15,12 @@ data class WeatherDataApiModel(
     @SerializedName("wind_kph")
     val windSpeed: Float,
     @SerializedName("wind_degree")
-    val windDegree: Int,
+    val windDegree: Float,
     @SerializedName("wind_dir")
     val windDirection: String,
     @SerializedName("precip_mm")
     val precipitationMillimetre: Float,
-    val humidity: Int,
+    val humidity: Float,
     val cloud: Int,
     @SerializedName("feelslike_c")
     val feelsLikeTempCentigrade: Float

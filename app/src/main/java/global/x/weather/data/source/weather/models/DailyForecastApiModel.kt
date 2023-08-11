@@ -1,4 +1,4 @@
-package global.x.weather.data.source.models
+package global.x.weather.data.source.weather.models
 
 import com.google.gson.annotations.SerializedName
 

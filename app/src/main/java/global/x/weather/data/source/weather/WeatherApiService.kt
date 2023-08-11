@@ -1,7 +1,7 @@
 package global.x.weather.data.source
 
-import global.x.weather.data.source.models.api_response.CurrentWeatherApiResponse
-import global.x.weather.data.source.models.api_response.DailyForecastApiResponse
+import global.x.weather.data.source.weather.models.api_response.CurrentWeatherApiResponse
+import global.x.weather.data.source.weather.models.api_response.DailyForecastApiResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

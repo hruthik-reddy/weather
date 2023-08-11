@@ -1,8 +1,8 @@
-package global.x.weather.data.source.models.api_response
+package global.x.weather.data.source.weather.models.api_response
 
-import global.x.weather.data.source.models.DailyForecastApiModel
-import global.x.weather.data.source.models.LocationApiModel
-import global.x.weather.data.source.models.WeatherDetailApiModel
+import global.x.weather.data.source.weather.models.DailyForecastApiModel
+import global.x.weather.data.source.weather.models.LocationApiModel
+import global.x.weather.data.source.weather.models.WeatherDetailApiModel
 import global.x.weather.domain.models.WeatherData
 
 data class DailyForecastApiResponse(

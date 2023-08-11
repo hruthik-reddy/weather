@@ -12,6 +12,58 @@
 ### Data Flow
 - presentation <-> domain <-> data
 
+### Folder Structure
+```bash
+.
+├── LICENSE
+├── README.md
+├── app
+│   ├── build. gradle
+│   ├── proguard-rules.pro
+│   └── src
+│       ├── androidTest
+│       ├── main
+│       │   ├── AndroidManifest.xml
+│       │   ├── java
+│       │   │   └── global
+│       │   │       └── x
+│       │   │           └── weather
+│       │   │               ├── XWeatherApplication.kt
+│       │   │               ├── data
+│       │   │               │   ├── repositories
+│       │   │               │   └── source
+│       │   │               │       ├── device
+│       │   │               │       └── weather
+│       │   │               ├── domain
+│       │   │               │   ├── models
+│       │   │               │   └── use_cases
+│       │   │               │       ├── device
+│       │   │               │       └── weather
+│       │   │               ├── infrastructure
+│       │   │               │   └── di
+│       │   │               └── presentation
+│       │   │                   ├── framework
+│       │   │                   │   └── theme
+│       │   │                   └── screen
+│       │   │                       ├── home
+│       │   │                       │   └── model
+│       │   │                       ├── settings
+│       │   │                       └── weather_detail
+│       │   └── res
+│       │       ├── drawable
+│       │       ├── values
+│       │       └── xml
+│       └── test
+├── build.gradle
+├── gradle
+│   └── wrapper
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── local.properties
+└── settings.gradle
+```
+
 ### To get the latest debug APK file
 
 #### Build locally

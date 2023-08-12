@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">X Weather</string>
+
+    <!-- Content Description -->
+    <string name="content_description_saved_regions">Saved regions</string>
+    <string name="content_description_search_regions">Search regions</string>
 </resources>

@@ -29,7 +29,8 @@ data class CurrentWeatherApiResponse(
             cloud = current.cloud,
             tempMinimum = null,
             tempMaximum = null,
-            hourlyData = null
+            hourlyData = null,
+            date = location.localTime
         )
     }
 }

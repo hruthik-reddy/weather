@@ -40,7 +40,7 @@ sealed interface WeatherData {
         override val localTime: String,
         override val localTimeEpoch: Long,
         //daily weather data
-
+        val date: String,
         val updatedAtEpoch: Long,
         val updatedAtTimeString: String,
         val tempAverage: Float,

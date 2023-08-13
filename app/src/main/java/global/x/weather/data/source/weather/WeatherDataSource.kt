@@ -1,6 +1,8 @@
-package global.x.weather.data.source
+package global.x.weather.data.source.weather
 
+import android.util.Log
 import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.SearchResultModel
 import global.x.weather.domain.models.WeatherData
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -43,6 +45,7 @@ class WeatherDataSource @Inject constructor() {
 
     suspend fun getCurrentWeatherData(city: String): Outcome<WeatherData.Daily> {
         val response = weatherApiService.getCurrentWeatherData(city)
+        Log.e("API Response", response.body().toString())
         if (response.isSuccessful) {
             response.body()?.toWeatherData()?.let {
                 return Outcome.Success(it)
@@ -58,11 +61,28 @@ class WeatherDataSource @Inject constructor() {
         noOfDays: Int
     ): Outcome<List<WeatherData.Daily>> {
         val response = weatherApiService.getHourlyForecastData(city, noOfDays)
+        Log.e("API Response", response.body().toString())
         if (response.isSuccessful) {
             response.body()?.toForecastData()?.let {
                 return Outcome.Success(it)
             }
         } else {
+            return Outcome.Error(Exception(response.errorBody().toString()))
+        }
+        return Outcome.Error(Exception("Unknown error"))
+    }
+
+    suspend fun search(city: String): Outcome<List<SearchResultModel>> {
+        val response = weatherApiService.searchCity(city)
+        if (response.isSuccessful) {
+            response.body()?.let { responseBody ->
+                return Outcome.Success(responseBody.map{ item ->
+                    item.toSearchResultModel()
+                })
+            }
+
+        } else {
+
             return Outcome.Error(Exception(response.errorBody().toString()))
         }
         return Outcome.Error(Exception("Unknown error"))

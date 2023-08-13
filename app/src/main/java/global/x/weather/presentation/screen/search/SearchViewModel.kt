@@ -1,5 +1,6 @@
 package global.x.weather.presentation.screen.search
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,9 +21,11 @@ class SearchViewModel @Inject constructor(
     val searchString: MutableLiveData<String> = MutableLiveData("")
     val autocompleteResult: MutableLiveData<List<SearchResultModel>?> = MutableLiveData()
     val errorMessage: MutableLiveData<String> = MutableLiveData("")
+    val isClearSearchIconVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
     fun onSearchStringChanged(newString: String) {
+        isClearSearchIconVisible.value = newString.isNotEmpty()
         searchString.value = newString
         if (newString.trim().length > 2) {
             performSearch(newString)
@@ -44,7 +47,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onSearchItemClicked(result: SearchResultModel) {
-
+        Log.d("Message", "Search Item clicked")
     }
 
     fun onSearchFieldValueCleared() {

@@ -37,7 +37,8 @@ fun SearchScreen(
     recommendationResult: State<List<SearchResultModel>?>,
     onRecommendationClicked: (location: SearchResultModel) -> Unit,
     paddingValues: PaddingValues,
-    onSearchFieldValueCleared: () -> Unit
+    onSearchFieldValueCleared: () -> Unit,
+    isClearSearchQueryVisible: State<Boolean?>
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
@@ -51,7 +52,8 @@ fun SearchScreen(
             onSearchFieldValueChanged = onSearchFieldValueChanged,
             recommendationResult = recommendationResult,
             onRecommendationClicked = onRecommendationClicked,
-            onSearchFieldValueCleared = onSearchFieldValueCleared
+            onSearchFieldValueCleared = onSearchFieldValueCleared,
+            isClearSearchQueryVisible = isClearSearchQueryVisible
         )
     }
 }
@@ -63,7 +65,8 @@ fun Content(
     onSearchFieldValueChanged: (newValue: String) -> Unit,
     recommendationResult: State<List<SearchResultModel>?>,
     onRecommendationClicked: (location: SearchResultModel) -> Unit,
-    onSearchFieldValueCleared: () -> Unit
+    onSearchFieldValueCleared: () -> Unit,
+    isClearSearchQueryVisible: State<Boolean?>
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -75,15 +78,18 @@ fun Content(
             },
             singleLine = true,
             trailingIcon = {
-                IconButton(onClick = onSearchFieldValueCleared) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_close),
-                        contentDescription = stringResource(
-                            id = R.string.content_description_none
-                        ),
+                if (isClearSearchQueryVisible.value == true) {
+                    IconButton(onClick = onSearchFieldValueCleared) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_close),
+                            contentDescription = stringResource(
+                                id = R.string.content_description_none
+                            ),
 
-                        )
+                            )
+                    }
                 }
+
 
             }
         )
@@ -152,6 +158,7 @@ private fun SearchScreenPreview() {
         onSearchFieldValueCleared = {
             s.value = ""
             recommendationResult.value = mutableListOf()
-        }
+        },
+        isClearSearchQueryVisible = remember { mutableStateOf(false) }
     )
 }

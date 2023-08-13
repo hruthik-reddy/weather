@@ -69,7 +69,8 @@ class MainActivity : ComponentActivity() {
                 recommendationResult = searchViewModel.autocompleteResult.observeAsState(),
                 onRecommendationClicked = { location -> searchViewModel.onSearchItemClicked(location) },
                 paddingValues = paddingValues,
-                onSearchFieldValueCleared = {searchViewModel.onSearchFieldValueCleared()}
+                onSearchFieldValueCleared = {searchViewModel.onSearchFieldValueCleared()},
+                isClearSearchQueryVisible = searchViewModel.isClearSearchIconVisible.observeAsState()
             )
         }
     }

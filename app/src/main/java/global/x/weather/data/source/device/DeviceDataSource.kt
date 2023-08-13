@@ -2,7 +2,10 @@ package global.x.weather.data.source.device
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.compose.ui.text.intl.Locale
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.ZoneId
+import java.util.TimeZone
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,5 +66,9 @@ class DeviceDataSource @Inject constructor(@ApplicationContext private val conte
 
     fun resetSecondaryCities() {
         sharedPreferences.edit().putString(SECONDARY_CITIES_KEY, "").apply()
+    }
+
+    fun getDeviceRegion():String{
+       return TimeZone.getDefault().id
     }
 }

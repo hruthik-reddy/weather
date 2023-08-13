@@ -33,4 +33,8 @@ class DeviceRepositoryImpl @Inject constructor(private val deviceDataSource: Dev
     override fun resetSecondaryCities() {
         deviceDataSource.resetSecondaryCities()
     }
+
+    override fun getDeviceRegion(): String {
+        return deviceDataSource.getDeviceRegion()
+    }
 }

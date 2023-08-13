@@ -7,4 +7,5 @@ interface DeviceRepository {
     fun updateSecondaryCities(cities: List<String>)
     fun resetPrimaryCity()
     fun resetSecondaryCities()
+    fun getDeviceRegion():String
 }

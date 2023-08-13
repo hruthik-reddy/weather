@@ -3,25 +3,19 @@ package global.x.weather.presentation.framework.components
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import global.x.weather.R
 
 
@@ -36,13 +30,13 @@ fun BlankTopAppBar() {
 fun CenterContentTopAppBar(
     title: @Composable () -> Unit,
     startIcon: ImageVector,
-    startIconContentDescription: String,
+    startIconContentDescription: String = stringResource(id = R.string.content_description_none),
     onStartIconClicked: () -> Unit,
-    endIcon: ImageVector,
-    endIconContentDescription: String,
-    onEndIconClicked: () -> Unit,
+    endIcon: ImageVector? = null,
+    endIconContentDescription: String = stringResource(id = R.string.content_description_none),
+    onEndIconClicked: (() -> Unit)? = null
 
-    ) {
+) {
     CenterAlignedTopAppBar(
         title = title,
         navigationIcon = {
@@ -51,9 +45,12 @@ fun CenterContentTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = onEndIconClicked, content = {
-                Icon(imageVector = endIcon, contentDescription = endIconContentDescription)
-            })
+            endIcon?.let { icon ->
+                IconButton(onClick = onEndIconClicked ?: {}, content = {
+                    Icon(imageVector = icon, contentDescription = endIconContentDescription)
+                })
+            }
+
         }
     )
 }

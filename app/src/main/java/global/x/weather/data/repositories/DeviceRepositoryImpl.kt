@@ -37,4 +37,8 @@ class DeviceRepositoryImpl @Inject constructor(private val deviceDataSource: Dev
     override fun getDeviceRegion(): String {
         return deviceDataSource.getDeviceRegion()
     }
+
+    override fun getSystemCurrentTimeInMillis(): Long {
+        return deviceDataSource.getSystemCurrentTimeInMillis()
+    }
 }

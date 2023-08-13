@@ -71,4 +71,8 @@ class DeviceDataSource @Inject constructor(@ApplicationContext private val conte
     fun getDeviceRegion():String{
        return TimeZone.getDefault().id
     }
+
+    fun getSystemCurrentTimeInMillis():Long{
+        return System.currentTimeMillis()
+    }
 }

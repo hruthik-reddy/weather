@@ -121,7 +121,7 @@ fun SimpleWeatherCondition(iconResource: Int, description: String){
 }
 
 @Composable
-private fun SimpleWeatherStat(
+ fun SimpleWeatherStat(
     title: String,
     icon: @Composable () -> Unit,
     stat: String,

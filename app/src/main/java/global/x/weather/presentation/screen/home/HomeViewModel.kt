@@ -8,6 +8,7 @@ import global.x.weather.domain.Outcome
 import global.x.weather.domain.models.WeatherData
 import global.x.weather.domain.use_cases.device.GetPrimaryCityUseCase
 import global.x.weather.domain.use_cases.device.GetSecondaryCitiesUseCase
+import global.x.weather.domain.use_cases.device.GetSystemCurrentTimeInMillisUseCase
 import global.x.weather.domain.use_cases.device.ResetPrimaryCityUseCase
 import global.x.weather.domain.use_cases.device.ResetSecondaryCityUseCase
 import global.x.weather.domain.use_cases.device.SetPrimaryCityUseCase
@@ -15,6 +16,7 @@ import global.x.weather.domain.use_cases.device.UpdateSecondaryCitiesUseCase
 import global.x.weather.domain.use_cases.weather.FetchCurrentWeatherDataUseCase
 import global.x.weather.domain.use_cases.weather.FetchHourlyForecastDataUseCase
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,22 +28,22 @@ class HomeViewModel @Inject constructor(
     private val getPrimaryCityUseCase: GetPrimaryCityUseCase,
     private val resetPrimaryCityUseCase: ResetPrimaryCityUseCase,
     private val resetSecondaryCityUseCase: ResetSecondaryCityUseCase,
-    private val getSecondaryCitiesUseCase: GetSecondaryCitiesUseCase
+    private val getSecondaryCitiesUseCase: GetSecondaryCitiesUseCase,
+    private val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase
 ) : ViewModel() {
     val currentWeatherData: MutableLiveData<WeatherData.Daily> = MutableLiveData()
     val forecastedWeatherData: MutableLiveData<List<WeatherData.Daily>> = MutableLiveData()
-    val testString: MutableLiveData<String> = MutableLiveData("")
+
+    init {
+        onFetchForecastedWeatherData()
+    }
 
     fun onFetchCurrentWeatherData() {
         viewModelScope.launch {
             val response = fetchCurrentWeatherDataUseCase.invoke("Pokhara")
             if (response is Outcome.Success) {
                 currentWeatherData.value = response.data
-                currentWeatherData.let {
-                    it.value?.let {
-                        testString.value = it.localTimeEpoch.toString()
-                    }
-                }
+
             }
         }
     }
@@ -50,14 +52,46 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val response = fetchHourlyForecastDataUseCase.invoke("Pokhara", 3)
             if (response is Outcome.Success) {
-                forecastedWeatherData.value = response.data
-                forecastedWeatherData.let {
-                    it.value?.let {
-                        testString.value = it.size.toString()
-                    }
-                }
+                filterForecastedWeatherResult(response.data)
             }
         }
     }
 
+
+    private fun filterForecastedWeatherResult(result: List<WeatherData.Daily>) {
+        val filteredHourlyData = result[0].hourlyData?.toMutableList()
+        filteredHourlyData?.removeIf {
+            TimeUnit.SECONDS.toMillis(it.timeEpoch) < getSystemCurrentTimeInMillisUseCase.invoke()
+        }
+        val newList = mutableListOf<WeatherData.Daily>()
+        result.forEachIndexed { index, item ->
+            newList.add(
+                WeatherData.Daily(
+                    location = item.location,
+                    country = item.country,
+                    localTime = item.localTime,
+                    localTimeEpoch = item.localTimeEpoch,
+                    updatedAtEpoch = item.updatedAtEpoch,
+                    updatedAtTimeString = item.updatedAtTimeString,
+                    tempAverage = item.tempAverage,
+                    tempMinimum = item.tempMinimum,
+                    tempMaximum = item.tempMaximum,
+                    isDay = item.isDay,
+                    conditionDescription = item.conditionDescription,
+                    windSpeed = item.windSpeed,
+                    windDegree = item.windDegree,
+                    precipitation = item.precipitation,
+                    humidity = item.humidity,
+                    cloud = item.cloud,
+                    hourlyData = if (index == 0) filteredHourlyData else item.hourlyData,
+                    region = item.region,
+                    date = item.date
+                )
+            )
+        }
+        forecastedWeatherData.value = newList
+
+    }
+
 }
+

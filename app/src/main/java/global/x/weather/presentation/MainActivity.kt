@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import global.x.weather.presentation.framework.theme.XWeatherTheme
+import global.x.weather.presentation.screen.home.HomeScreen
 import global.x.weather.presentation.screen.home.HomeViewModel
 import global.x.weather.presentation.screen.search.SearchScreen
 import global.x.weather.presentation.screen.search.SearchViewModel
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold {
-                        Content(paddingValues = it)
+                        HomeScreenContent(paddingValues = it)
                     }
                 }
             }
@@ -57,7 +58,22 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun Content(paddingValues: PaddingValues) {
+    private fun HomeScreenContent(paddingValues: PaddingValues) {
+
+        Scaffold(modifier = Modifier.padding(paddingValues)) { it ->
+            HomeScreen(
+                weatherDataState = homeViewModel.forecastedWeatherData.observeAsState(),
+                paddingValues = it
+
+            )
+
+        }
+
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun SearchScreenContent(paddingValues: PaddingValues) {
         Scaffold(modifier = Modifier.padding(paddingValues)) { paddingValues ->
             SearchScreen(
                 searchFieldValue = searchViewModel.searchString.observeAsState(),
@@ -69,7 +85,7 @@ class MainActivity : ComponentActivity() {
                 recommendationResult = searchViewModel.autocompleteResult.observeAsState(),
                 onRecommendationClicked = { location -> searchViewModel.onSearchItemClicked(location) },
                 paddingValues = paddingValues,
-                onSearchFieldValueCleared = {searchViewModel.onSearchFieldValueCleared()},
+                onSearchFieldValueCleared = { searchViewModel.onSearchFieldValueCleared() },
                 isClearSearchQueryVisible = searchViewModel.isClearSearchIconVisible.observeAsState()
             )
         }

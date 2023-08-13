@@ -8,4 +8,6 @@ interface DeviceRepository {
     fun resetPrimaryCity()
     fun resetSecondaryCities()
     fun getDeviceRegion():String
+
+    fun getSystemCurrentTimeInMillis(): Long
 }

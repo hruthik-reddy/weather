@@ -1,6 +1,7 @@
-package global.x.weather.data.source
+package global.x.weather.data.source.weather
 
 import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.SearchResultModel
 import global.x.weather.domain.models.WeatherData
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -63,6 +64,22 @@ class WeatherDataSource @Inject constructor() {
                 return Outcome.Success(it)
             }
         } else {
+            return Outcome.Error(Exception(response.errorBody().toString()))
+        }
+        return Outcome.Error(Exception("Unknown error"))
+    }
+
+    suspend fun search(city: String): Outcome<List<SearchResultModel>> {
+        val response = weatherApiService.searchCity(city)
+        if (response.isSuccessful) {
+            response.body()?.let { responseBody ->
+                return Outcome.Success(responseBody.map{ item ->
+                    item.toSearchResultModel()
+                })
+            }
+
+        } else {
+
             return Outcome.Error(Exception(response.errorBody().toString()))
         }
         return Outcome.Error(Exception("Unknown error"))

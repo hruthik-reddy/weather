@@ -20,8 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import global.x.weather.presentation.framework.theme.XWeatherTheme
-import global.x.weather.presentation.screen.home.HomeScreen
 import global.x.weather.presentation.screen.home.HomeViewModel
+import global.x.weather.presentation.screen.search.SearchScreen
+import global.x.weather.presentation.screen.search.SearchViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,12 +58,18 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun Content(paddingValues: PaddingValues) {
-        Scaffold(modifier = Modifier.padding(paddingValues)) {
-            HomeScreen(
-                onFetchCurrentWeather = homeViewModel::onFetchCurrentWeatherData,
-                onFetchForecastedWeather = homeViewModel::onFetchForecastedWeatherData,
-                paddingValues = it,
-                textState = homeViewModel.testString.observeAsState()
+        Scaffold(modifier = Modifier.padding(paddingValues)) { paddingValues ->
+            SearchScreen(
+                searchFieldValue = searchViewModel.searchString.observeAsState(),
+                onSearchFieldValueChanged = { newValue ->
+                    searchViewModel.onSearchStringChanged(
+                        newValue
+                    )
+                },
+                recommendationResult = searchViewModel.autocompleteResult.observeAsState(),
+                onRecommendationClicked = { location -> searchViewModel.onSearchItemClicked(location) },
+                paddingValues = paddingValues,
+                onSearchFieldValueCleared = {searchViewModel.onSearchFieldValueCleared()}
             )
         }
     }

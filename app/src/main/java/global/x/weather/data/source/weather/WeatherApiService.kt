@@ -1,7 +1,8 @@
-package global.x.weather.data.source
+package global.x.weather.data.source.weather
 
 import global.x.weather.data.source.weather.models.api_response.CurrentWeatherApiResponse
 import global.x.weather.data.source.weather.models.api_response.DailyForecastApiResponse
+import global.x.weather.data.source.weather.models.api_response.SearchApiResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,4 +14,6 @@ interface WeatherApiService {
     @GET("forecast.json")
     suspend fun getHourlyForecastData(@Query("q") city: String, @Query("days") days: Int) : Response<DailyForecastApiResponse>
 
+    @GET("search.json")
+    suspend fun searchCity(@Query("q") city: String): Response<List<SearchApiResponse>>
 }

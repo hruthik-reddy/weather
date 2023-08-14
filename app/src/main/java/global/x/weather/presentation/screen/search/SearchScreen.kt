@@ -119,7 +119,7 @@ fun SimpleSearchRecommendation(
     ) {
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.height(48.dp)) {
             Text(
-                text = recommendation.getDisplayName(), modifier = Modifier
+                text = recommendation.getDisplayName(", "), modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
             )

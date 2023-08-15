@@ -1,6 +1,8 @@
 package global.x.weather.presentation.screen.favorites
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,9 +29,14 @@ import global.x.weather.R
 import global.x.weather.infrastructure.util.DateUtil
 import global.x.weather.presentation.framework.components.CenterContentTopAppBar
 import global.x.weather.presentation.framework.components.LargeHorizontalSpacer
+import global.x.weather.presentation.framework.components.MediumHorizontalSpacer
+import global.x.weather.presentation.framework.components.SimpleHumidity
 import global.x.weather.presentation.framework.components.SimpleHumidityStat
+import global.x.weather.presentation.framework.components.SimpleRain
 import global.x.weather.presentation.framework.components.SimpleRainStat
+import global.x.weather.presentation.framework.components.SimpleTemperature
 import global.x.weather.presentation.framework.components.SimpleTemperatureStat
+import global.x.weather.presentation.framework.components.SimpleWeatherStat
 import global.x.weather.presentation.framework.components.SmallHorizontalSpacer
 import global.x.weather.presentation.framework.components.SmallVerticalSpacer
 import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
@@ -35,6 +44,7 @@ import global.x.weather.presentation.framework.components.TinyVerticalSpacer
 import global.x.weather.presentation.framework.components.XLargeVerticalSpacer
 import global.x.weather.presentation.screen.favorites.model.FavoriteLocationModel
 import global.x.weather.presentation.screen.home.model.WeatherData
+import java.util.Locale
 
 @Composable
 fun FavoriteScreen(
@@ -136,8 +146,9 @@ private fun Content(
         }
 
         XLargeVerticalSpacer()
-        Column() {
-            favoriteLocationDataList.value?.forEach {
+
+        favoriteLocationDataList.value?.forEach {
+            Column() {
                 FavoriteLocationItem(data = it, onFavoriteItemTapped = onFavoriteItemTapped)
                 TinyVerticalSpacer()
             }
@@ -154,14 +165,47 @@ private fun FavoriteLocationItem(
     onFavoriteItemTapped: (favoriteLocationModel: FavoriteLocationModel) -> Unit
 ) {
     Surface(onClick = { onFavoriteItemTapped(data) }) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(data.getDisplayName(",\n"))
-            SmallHorizontalSpacer()
-            SimpleTemperatureStat(temperature = data.weatherData?.temperature ?: 0f)
-            SmallHorizontalSpacer()
-            SimpleHumidityStat(humidity = data.weatherData?.humidity ?: 0f)
-            SmallHorizontalSpacer()
-            SimpleRainStat(rain = data.weatherData?.precipitation ?: 0f)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(Color.Green),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(data.getDisplayName())
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SimpleWeatherStat(
+                    stat = String.format(
+                        Locale.ENGLISH,
+                        stringResource(id = R.string.quantity_centigrade),
+                        data.weatherData?.temperature ?: 0f
+                    ),
+                    icon = { SimpleTemperature() },
+                    title = ""
+                )
+                MediumHorizontalSpacer()
+                SimpleWeatherStat(
+                    stat = String.format(
+                        Locale.ENGLISH,
+                        stringResource(id = R.string.quantity_percent),
+                        data.weatherData?.humidity ?: 0f
+                    ),
+                    icon = { SimpleHumidity() },
+                    title = ""
+                )
+                MediumHorizontalSpacer()
+                SimpleWeatherStat(
+                    stat = String.format(
+                        Locale.ENGLISH,
+                        stringResource(id = R.string.quantity_percent),
+                        data.weatherData?.precipitation ?: 0f
+                    ),
+                    icon = { SimpleRain() },
+                    title = ""
+                )
+            }
+
         }
     }
 

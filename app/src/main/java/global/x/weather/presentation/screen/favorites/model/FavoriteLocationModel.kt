@@ -11,7 +11,7 @@ data class FavoriteLocationModel(
     val isDefault: Boolean = false,
     val weatherData: WeatherData? = null
 ) {
-    fun getDisplayName(delimiter: String): String {
-     return   StringUtil.getDisplayName(name, region, country, delimiter)
+    fun getDisplayName(): String {
+     return   "$name,\n$country"
     }
 }

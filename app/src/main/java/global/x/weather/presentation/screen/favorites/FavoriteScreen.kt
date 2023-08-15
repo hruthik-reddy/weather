@@ -32,6 +32,7 @@ import global.x.weather.presentation.framework.components.SmallHorizontalSpacer
 import global.x.weather.presentation.framework.components.SmallVerticalSpacer
 import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
 import global.x.weather.presentation.framework.components.TinyVerticalSpacer
+import global.x.weather.presentation.framework.components.XLargeVerticalSpacer
 import global.x.weather.presentation.screen.favorites.model.FavoriteLocationModel
 import global.x.weather.presentation.screen.home.model.WeatherData
 
@@ -134,7 +135,7 @@ private fun Content(
             Text(dateState.value ?: "")
         }
 
-        LargeHorizontalSpacer()
+        XLargeVerticalSpacer()
         Column() {
             favoriteLocationDataList.value?.forEach {
                 FavoriteLocationItem(data = it, onFavoriteItemTapped = onFavoriteItemTapped)
@@ -153,7 +154,7 @@ private fun FavoriteLocationItem(
     onFavoriteItemTapped: (favoriteLocationModel: FavoriteLocationModel) -> Unit
 ) {
     Surface(onClick = { onFavoriteItemTapped(data) }) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(data.getDisplayName(",\n"))
             SmallHorizontalSpacer()
             SimpleTemperatureStat(temperature = data.weatherData?.temperature ?: 0f)

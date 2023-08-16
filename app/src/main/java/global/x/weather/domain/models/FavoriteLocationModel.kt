@@ -1,5 +1,6 @@
 package global.x.weather.domain.models
 
+import com.google.gson.Gson
 import global.x.weather.data.source.device.model.SavedLocationModel
 import global.x.weather.infrastructure.util.StringUtil
 import global.x.weather.presentation.screen.home.model.WeatherData
@@ -28,5 +29,9 @@ data class FavoriteLocationModel(
             country = country,
             isDefault = isDefault
         )
+    }
+
+     fun toStringArg(): String {
+        return Gson().toJson(this)
     }
 }

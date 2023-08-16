@@ -1,6 +1,5 @@
 package global.x.weather.presentation.screen.home
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +46,8 @@ import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
 fun HomeScreen(
     weatherDataState: State<List<WeatherData.Daily>?>,
     paddingValues: PaddingValues,
+    onSearchIconTapped: () -> Unit,
+    onLocationIconTapped: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.padding(paddingValues)
@@ -55,6 +55,9 @@ fun HomeScreen(
         Screen(
             weatherDataState = weatherDataState,
             paddingValues = it,
+            onSearchIconTapped = onSearchIconTapped,
+            onLocationIconTapped = onLocationIconTapped
+
         )
     }
 }
@@ -63,18 +66,19 @@ fun HomeScreen(
 fun Screen(
     weatherDataState: State<List<WeatherData.Daily>?>,
     paddingValues: PaddingValues,
+    onSearchIconTapped: () -> Unit,
+    onLocationIconTapped: () -> Unit
 ) {
     Column() {
         CenterContentTopAppBar(
             title = { Text("Pokhara") },
             startIcon = ImageVector.vectorResource(id = R.drawable.ic_map),
             startIconContentDescription = stringResource(id = R.string.content_description_saved_regions),
-            onStartIconClicked = { /*TODO*/ },
+            onStartIconClicked = onLocationIconTapped,
             endIcon = ImageVector.vectorResource(id = R.drawable.ic_search),
-            endIconContentDescription = stringResource(id = R.string.content_description_search_regions)
-        ) {
-
-        }
+            endIconContentDescription = stringResource(id = R.string.content_description_search_regions),
+            onEndIconClicked = onSearchIconTapped
+        )
         Content(
             weatherDataState = weatherDataState,
         )

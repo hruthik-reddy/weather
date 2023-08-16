@@ -1,30 +1,41 @@
 package global.x.weather.presentation.screen.home
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.FavoriteLocationModel
 import global.x.weather.domain.models.WeatherData
+import global.x.weather.domain.use_cases.device.GetDeviceRegionUseCase
 import global.x.weather.domain.use_cases.device.GetSystemCurrentTimeInMillisUseCase
 import global.x.weather.domain.use_cases.weather.FetchCurrentWeatherDataUseCase
 import global.x.weather.domain.use_cases.weather.FetchHourlyForecastDataUseCase
+import global.x.weather.infrastructure.util.toFavoriteLocationModel
+import global.x.weather.presentation.screen.WeatherNavigationRoute
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val fetchCurrentWeatherDataUseCase: FetchCurrentWeatherDataUseCase,
     private val fetchHourlyForecastDataUseCase: FetchHourlyForecastDataUseCase,
-    private val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase
+    private val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase,
+    private val deviceRegionUseCase: GetDeviceRegionUseCase
 ) : ViewModel() {
     val currentWeatherData: MutableLiveData<WeatherData.Daily> = MutableLiveData()
     val forecastedWeatherData: MutableLiveData<List<WeatherData.Daily>> = MutableLiveData()
 
     init {
-        onFetchForecastedWeatherData()
+        val locationModel: String =
+            savedStateHandle[WeatherNavigationRoute.Home.argumentName]
+                ?: deviceRegionUseCase.invoke()
+        onFetchForecastedWeatherData(locationModel)
     }
+
 
     fun onFetchCurrentWeatherData() {
         viewModelScope.launch {
@@ -36,9 +47,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onFetchForecastedWeatherData() {
+    private fun onFetchForecastedWeatherData(locationName: String) {
         viewModelScope.launch {
-            val response = fetchHourlyForecastDataUseCase.invoke("Pokhara", 3)
+            val response =
+                fetchHourlyForecastDataUseCase.invoke(locationName, 3)
             if (response is Outcome.Success) {
                 filterForecastedWeatherResult(response.data)
             }

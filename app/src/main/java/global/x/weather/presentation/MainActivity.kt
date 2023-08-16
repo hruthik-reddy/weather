@@ -7,19 +7,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import global.x.weather.domain.models.SearchResultModel
+import global.x.weather.infrastructure.util.observeAsAction
 import global.x.weather.presentation.framework.theme.XWeatherTheme
+import global.x.weather.presentation.screen.WeatherNavigationRoute
 import global.x.weather.presentation.screen.favorites.FavoriteScreen
 import global.x.weather.presentation.screen.favorites.FavoriteViewModel
 import global.x.weather.presentation.screen.home.HomeScreen
@@ -47,17 +53,93 @@ class MainActivity : ComponentActivity() {
         setContent {
             XWeatherTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-
-                    color = MaterialTheme.colorScheme.background
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = WeatherNavigationRoute.Home.getName()
                 ) {
-                    Scaffold {
-                        FavoriteLocationContent(paddingValues = it)
+                    composable(
+                        WeatherNavigationRoute.Home.getName(),
+                        WeatherNavigationRoute.Home.args
+                    ) {
+                        Scaffold() {
+                            HomeScreenContent(
+                                paddingValues = it,
+                                onSearchIconTapped = mainViewModel::onNavigateToSearch,
+                                onLocationIconTapped = mainViewModel::onNavigateToFavorites
+                            )
+                        }
                     }
+                    composable(WeatherNavigationRoute.Search.getName()) {
+                        Scaffold() {
+                            SearchScreenContent(
+                                paddingValues = it,
+                                onBackIconTapped = mainViewModel::onNavigateBack,
+                                searchStringState = searchViewModel.searchString.observeAsState(),
+                                onSearchStringChanged = searchViewModel::onSearchStringChanged,
+                                isClearButtonVisible = searchViewModel.isClearSearchIconVisible.observeAsState(),
+                                onRecommendationItemTapped = { searchResultModel ->
+                                    mainViewModel.onShowWeatherDetail(searchResultModel.toFavoriteLocationModel())
+                                },
+                                onSearchFieldValueCleared = searchViewModel::onSearchFieldValueCleared,
+                                recommendationResultState = searchViewModel.autocompleteResult.observeAsState()
+
+                            )
+                        }
+                    }
+                    composable(WeatherNavigationRoute.Favorite.getName()) {
+                        val viewModel = hiltViewModel<FavoriteViewModel>()
+                        Scaffold() {
+                            FavoriteScreen(
+                                paddingValues = it,
+                                onBackIconClicked = mainViewModel::onNavigateBack,
+                                dateState = viewModel.dateState.observeAsState(),
+                                favoriteLocationDataList = viewModel.favoriteLocationDataList.observeAsState(),
+                                onFavoriteItemTapped = viewModel::onFavoriteItemTapped
+                            )
+
+                        }
+                    }
+                    registerObservers(navController = navController)
+
                 }
+
             }
         }
+    }
+
+    private fun registerObservers(navController: NavController) {
+        mainViewModel.onShowWeatherDetail.observeAsAction(
+            lifecycleOwner = this,
+            action = {
+
+                navController.navigate("${WeatherNavigationRoute.Home.getName()}/${it.toStringArg()}")
+            },
+            onActionResolved = mainViewModel::onShowWeatherDetailResolved
+        )
+        mainViewModel.onNavigateToSearch.observeAsAction(
+            lifecycleOwner = this,
+            action = {
+                navController.navigate(WeatherNavigationRoute.Search.getName())
+            },
+            onActionResolved = mainViewModel::onNavigateToSearchResolved
+        )
+        mainViewModel.onNavigateToFavorites.observeAsAction(
+            lifecycleOwner = this,
+            action = {
+                navController.navigate(
+                    WeatherNavigationRoute.Favorite.getName()
+                )
+            },
+            onActionResolved = mainViewModel::onNavigateToFavoritesResolved
+        )
+        mainViewModel.onNavigateBack.observeAsAction(
+            lifecycleOwner = this,
+            action = {
+                navController.popBackStack()
+            },
+            onActionResolved = mainViewModel::onNavigateBackResolved
+        )
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -76,13 +158,18 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun HomeScreenContent(paddingValues: PaddingValues) {
+    private fun HomeScreenContent(
+        paddingValues: PaddingValues,
+        onSearchIconTapped: () -> Unit,
+        onLocationIconTapped: () -> Unit
+    ) {
 
         Scaffold(modifier = Modifier.padding(paddingValues)) { it ->
             HomeScreen(
                 weatherDataState = homeViewModel.forecastedWeatherData.observeAsState(),
-                paddingValues = it
-
+                paddingValues = it,
+                onSearchIconTapped = onSearchIconTapped,
+                onLocationIconTapped = onLocationIconTapped
             )
 
         }
@@ -91,20 +178,26 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun SearchScreenContent(paddingValues: PaddingValues) {
+    private fun SearchScreenContent(
+        paddingValues: PaddingValues,
+        onBackIconTapped: () -> Unit,
+        searchStringState: State<String?>,
+        onSearchStringChanged: (String) -> Unit,
+        recommendationResultState: State<List<SearchResultModel>?>,
+        onRecommendationItemTapped: (SearchResultModel) -> Unit,
+        onSearchFieldValueCleared: () -> Unit,
+        isClearButtonVisible: State<Boolean?>
+    ) {
         Scaffold(modifier = Modifier.padding(paddingValues)) { paddingValues ->
             SearchScreen(
-                searchFieldValue = searchViewModel.searchString.observeAsState(),
-                onSearchFieldValueChanged = { newValue ->
-                    searchViewModel.onSearchStringChanged(
-                        newValue
-                    )
-                },
-                recommendationResult = searchViewModel.autocompleteResult.observeAsState(),
-                onRecommendationClicked = { location -> searchViewModel.onSearchItemClicked(location) },
+                searchFieldValue = searchStringState,
+                onSearchFieldValueChanged = onSearchStringChanged,
+                recommendationResult = recommendationResultState,
+                onRecommendationClicked = onRecommendationItemTapped,
                 paddingValues = paddingValues,
-                onSearchFieldValueCleared = { searchViewModel.onSearchFieldValueCleared() },
-                isClearSearchQueryVisible = searchViewModel.isClearSearchIconVisible.observeAsState()
+                onSearchFieldValueCleared = onSearchFieldValueCleared,
+                isClearSearchQueryVisible = isClearButtonVisible,
+                onBackIconTapped = onBackIconTapped
             )
         }
     }

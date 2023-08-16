@@ -38,13 +38,14 @@ fun SearchScreen(
     onRecommendationClicked: (location: SearchResultModel) -> Unit,
     paddingValues: PaddingValues,
     onSearchFieldValueCleared: () -> Unit,
-    isClearSearchQueryVisible: State<Boolean?>
+    isClearSearchQueryVisible: State<Boolean?>,
+    onBackIconTapped: ()-> Unit
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
             title = { Text("Search") },
             startIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
-            onStartIconClicked = { },
+            onStartIconClicked = onBackIconTapped,
         )
         SmallVerticalSpacer()
         Content(

@@ -16,6 +16,10 @@ data class FavoriteLocationModel(
         return "$name,\n$country"
     }
 
+    fun getIdentifier(): String {
+        return "$name $region $country"
+    }
+
     fun toSavedLocationModel(): SavedLocationModel {
         return SavedLocationModel(
             id = id,

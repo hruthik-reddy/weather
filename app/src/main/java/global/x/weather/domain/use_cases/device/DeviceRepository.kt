@@ -4,11 +4,11 @@ import global.x.weather.data.source.device.model.SavedLocationModel
 
 interface DeviceRepository {
 
-    fun getSavedLocations(): List<SavedLocationModel?>
+    fun getSavedLocations(): List<SavedLocationModel>
 
-    fun updateSavedLocations(locations: List<SavedLocationModel?>)
+    fun updateSavedLocations(locations: List<SavedLocationModel>)
 
-    fun deleteSavedLocation(locations: List<SavedLocationModel?>)
+    fun deleteSavedLocation(locations: List<SavedLocationModel>)
 
     fun clearSavedLocations()
 

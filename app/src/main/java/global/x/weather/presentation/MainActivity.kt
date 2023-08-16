@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold {
-                       FavoriteLocationContent(paddingValues = it)
+                        FavoriteLocationContent(paddingValues = it)
                     }
                 }
             }
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
                 onBackIconClicked = {},
                 dateState = favoriteViewModel.dateState.observeAsState(),
                 favoriteLocationDataList = favoriteViewModel.favoriteLocationDataList.observeAsState(),
-                onFavoriteItemTapped = {}
+                onFavoriteItemTapped = favoriteViewModel::onFavoriteItemTapped
             )
         }
     }

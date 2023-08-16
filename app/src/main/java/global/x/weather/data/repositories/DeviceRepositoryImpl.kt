@@ -9,15 +9,15 @@ import javax.inject.Singleton
 @Singleton
 class DeviceRepositoryImpl @Inject constructor(private val deviceDataSource: DeviceDataSource) :
     DeviceRepository {
-    override fun getSavedLocations(): List<SavedLocationModel?> {
+    override fun getSavedLocations(): List<SavedLocationModel> {
         return deviceDataSource.getSavedLocations()
     }
 
-    override fun updateSavedLocations(locations: List<SavedLocationModel?>) {
+    override fun updateSavedLocations(locations: List<SavedLocationModel>) {
          deviceDataSource.updateSavedLocations(locations = locations)
     }
 
-    override fun deleteSavedLocation(locations: List<SavedLocationModel?>) {
+    override fun deleteSavedLocation(locations: List<SavedLocationModel>) {
         deviceDataSource.deleteSavedLocations(locations = locations)
     }
 

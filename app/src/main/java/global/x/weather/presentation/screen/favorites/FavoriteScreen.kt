@@ -1,13 +1,10 @@
 package global.x.weather.presentation.screen.favorites
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,29 +19,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import global.x.weather.R
-import global.x.weather.infrastructure.util.DateUtil
 import global.x.weather.presentation.framework.components.CenterContentTopAppBar
-import global.x.weather.presentation.framework.components.LargeHorizontalSpacer
 import global.x.weather.presentation.framework.components.MediumHorizontalSpacer
 import global.x.weather.presentation.framework.components.SimpleHumidity
-import global.x.weather.presentation.framework.components.SimpleHumidityStat
 import global.x.weather.presentation.framework.components.SimpleRain
-import global.x.weather.presentation.framework.components.SimpleRainStat
 import global.x.weather.presentation.framework.components.SimpleTemperature
-import global.x.weather.presentation.framework.components.SimpleTemperatureStat
 import global.x.weather.presentation.framework.components.SimpleWeatherStat
-import global.x.weather.presentation.framework.components.SmallHorizontalSpacer
 import global.x.weather.presentation.framework.components.SmallVerticalSpacer
 import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
-import global.x.weather.presentation.framework.components.TinyVerticalSpacer
 import global.x.weather.presentation.framework.components.XLargeVerticalSpacer
-import global.x.weather.presentation.screen.favorites.model.FavoriteLocationModel
+import global.x.weather.domain.models.FavoriteLocationModel
 import global.x.weather.presentation.screen.home.model.WeatherData
 import java.util.Locale
 

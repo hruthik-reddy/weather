@@ -1,13 +1,12 @@
 package global.x.weather.presentation.screen.favorites
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import global.x.weather.domain.use_cases.device.GetSystemCurrentTimeInMillisUseCase
 import global.x.weather.infrastructure.util.DateUtil
-import global.x.weather.presentation.screen.favorites.model.FavoriteLocationModel
+import global.x.weather.domain.models.FavoriteLocationModel
 import global.x.weather.presentation.screen.home.model.WeatherData
 import javax.inject.Inject
 

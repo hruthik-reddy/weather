@@ -1,11 +1,13 @@
 package global.x.weather.presentation.screen.favorites
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -132,9 +134,9 @@ private fun Content(
     Column() {
         Row(
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
                 contentDescription = stringResource(
@@ -150,7 +152,6 @@ private fun Content(
         favoriteLocationDataList.value?.forEach {
             Column() {
                 FavoriteLocationItem(data = it, onFavoriteItemTapped = onFavoriteItemTapped)
-                TinyVerticalSpacer()
             }
         }
 
@@ -168,8 +169,8 @@ private fun FavoriteLocationItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .background(Color.Green),
+                .padding(all = 16.dp)
+                .border(width = 2.dp, Color.Transparent),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -182,7 +183,7 @@ private fun FavoriteLocationItem(
                         data.weatherData?.temperature ?: 0f
                     ),
                     icon = { SimpleTemperature() },
-                    title = ""
+                    title = null
                 )
                 MediumHorizontalSpacer()
                 SimpleWeatherStat(
@@ -192,7 +193,7 @@ private fun FavoriteLocationItem(
                         data.weatherData?.humidity ?: 0f
                     ),
                     icon = { SimpleHumidity() },
-                    title = ""
+                    title = null
                 )
                 MediumHorizontalSpacer()
                 SimpleWeatherStat(
@@ -202,7 +203,7 @@ private fun FavoriteLocationItem(
                         data.weatherData?.precipitation ?: 0f
                     ),
                     icon = { SimpleRain() },
-                    title = ""
+                    title = null
                 )
             }
 

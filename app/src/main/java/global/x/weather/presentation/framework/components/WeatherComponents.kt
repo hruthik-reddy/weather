@@ -126,13 +126,15 @@ fun SimpleWeatherCondition(iconResource: Int, description: String){
 
 @Composable
  fun SimpleWeatherStat(
-    title: String,
+    title: String? = null,
     icon: @Composable () -> Unit,
     stat: String,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         icon.invoke()
         Text(text = stat)
-        Text(text = title)
+        title?.let{
+            Text(text = title)
+        }
     }
 }

@@ -19,6 +19,7 @@
     <string name="quantity_centigrade">%.1f°C</string>
     <string name="quantity_kilometer_per_hour">%.1f km/hr</string>
     <string name="quantity_percent">%.1f\%%</string>
+    <string name="title_favorites">Favorites</string>
 
 
 </resources>

@@ -32,7 +32,7 @@ fun LargeVerticalSpacer(){
 
 @Composable
 fun XLargeVerticalSpacer(){
-    Spacer(modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.element_spacing_xlarge)))
+    Spacer(modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.element_spacing_xlarge)))
 
 }
 

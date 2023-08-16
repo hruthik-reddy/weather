@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import global.x.weather.presentation.framework.theme.XWeatherTheme
+import global.x.weather.presentation.screen.favorites.FavoriteScreen
+import global.x.weather.presentation.screen.favorites.FavoriteViewModel
 import global.x.weather.presentation.screen.home.HomeScreen
 import global.x.weather.presentation.screen.home.HomeViewModel
 import global.x.weather.presentation.screen.search.SearchScreen
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
     private val searchViewModel: SearchViewModel by viewModels()
+    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,13 +49,28 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
+
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold {
-                        HomeScreenContent(paddingValues = it)
+                        FavoriteLocationContent(paddingValues = it)
                     }
                 }
             }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun FavoriteLocationContent(paddingValues: PaddingValues) {
+        Scaffold(modifier = Modifier.padding(paddingValues)) {
+            FavoriteScreen(
+                paddingValues = it,
+                onBackIconClicked = {},
+                dateState = favoriteViewModel.dateState.observeAsState(),
+                favoriteLocationDataList = favoriteViewModel.favoriteLocationDataList.observeAsState(),
+                onFavoriteItemTapped = favoriteViewModel::onFavoriteItemTapped
+            )
         }
     }
 

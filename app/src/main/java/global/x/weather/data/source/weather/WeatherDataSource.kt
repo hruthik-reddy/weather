@@ -17,7 +17,7 @@ class WeatherDataSource @Inject constructor() {
     companion object {
         const val TEST_BASE_URL = "https://jsonplaceholder.typicode.com/"
         const val API_BASE_URL = "https://api.weatherapi.com/v1/"
-        const val API_KEY = ""
+        const val API_KEY = "9b13427bccca4794814152219230808"
     }
 
     private val weatherApiService: WeatherApiService

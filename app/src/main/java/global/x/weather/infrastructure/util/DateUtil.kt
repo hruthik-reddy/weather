@@ -1,6 +1,7 @@
 package global.x.weather.infrastructure.util
 
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class DateUtil {
@@ -11,6 +12,7 @@ class DateUtil {
 
             return formatter.format(dateParser.parse(date) ?: "")
         }
+
         fun getFormattedDateMonthShort(date: String): String {
             val dateParser = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
@@ -24,6 +26,12 @@ class DateUtil {
             val formatter = SimpleDateFormat("HH:mm", Locale.ENGLISH)
             return formatter.format(dateParser.parse(date) ?: "")
         }
+
+        fun getDateFromEpoch(timeInMillis: Long): String {
+            val dateFormatter = SimpleDateFormat("MMM d", Locale.ENGLISH)
+            return dateFormatter.format(Date(timeInMillis))
+        }
+
     }
 
 }

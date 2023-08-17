@@ -51,7 +51,7 @@ fun FavoriteScreen(
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
-            title = { Text(stringResource(id = R.string.title_favorites)) },
+            title = { Text(stringResource(id = R.string.title_favorites), color = Color.Gray) },
             startIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
             onStartIconClicked = onBackIconClicked
         )
@@ -134,10 +134,11 @@ private fun Content(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
                 contentDescription = stringResource(
                     id = R.string.content_description_date
-                )
+                ),
+                tint = Color.Gray
             )
             TinyHorizontalSpacer()
-            Text(dateState.value ?: "")
+            Text(dateState.value ?: "", color = Color.Gray)
         }
 
         XLargeVerticalSpacer()

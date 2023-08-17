@@ -1,5 +1,6 @@
 package global.x.weather.presentation.framework.components
 
+import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -118,7 +121,8 @@ private fun SimpleDrawableIcon(
 ) {
     Icon(
         imageVector = ImageVector.vectorResource(id = iconResource),
-        contentDescription = stringResource(id = contentDescription)
+        contentDescription = stringResource(id = contentDescription),
+        tint = Color.Gray
     )
 }
 
@@ -127,7 +131,8 @@ fun SimpleWeatherCondition(iconResource: Int, description: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
             imageVector = ImageVector.vectorResource(id = iconResource),
-            contentDescription = stringResource(id = R.string.content_description_none)
+            contentDescription = stringResource(id = R.string.content_description_none),
+            tint = Color.Gray
         )
         Text(text = description)
     }
@@ -157,9 +162,9 @@ fun SimpleWeatherStat(
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         icon.invoke()
-        Text(text = stat)
+        Text(text = stat, fontWeight = FontWeight.Light, fontFamily = FontFamily.Monospace)
         title?.let {
-            Text(text = title)
+            Text(text = title, color = Color.Gray)
         }
     }
 }

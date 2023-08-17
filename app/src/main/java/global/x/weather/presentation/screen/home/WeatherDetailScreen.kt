@@ -84,7 +84,7 @@ fun Screen(
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
-            title = { Text(weatherDataState.value?.firstOrNull()?.location ?: "") },
+            title = { Text(weatherDataState.value?.firstOrNull()?.location ?: "", color = Color.Gray) },
             startIcon = appbarStartIcon,
             onStartIconClicked = onAppbarStartIconTapped,
             endIcon = appbarEndIcon,
@@ -116,16 +116,18 @@ fun Content(
         ) {
 
             Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar,),
                 contentDescription = stringResource(
                     id = R.string.content_description_date
-                )
+                ),
+                tint = Color.Gray
             )
             TinyHorizontalSpacer()
             Text(
                 DateUtil.getFormattedDateMonth(
                     weatherDataState.value?.firstOrNull()?.localTime ?: ""
-                )
+                ),
+                color = Color.Gray
             )
         }
         SmallVerticalSpacer()
@@ -213,7 +215,8 @@ fun DailyWeatherForecast(items: List<WeatherData.Daily?>) {
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
                     contentDescription = stringResource(
                         id = R.string.content_description_none
-                    )
+                    ),
+                    tint = Color.Gray
                 )
             }
 

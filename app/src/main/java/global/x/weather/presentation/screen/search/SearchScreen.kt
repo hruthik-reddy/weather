@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -44,7 +45,7 @@ fun SearchScreen(
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
-            title = { Text("Search") },
+            title = { Text("Search", color = Color.Gray) },
             startIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
             onStartIconClicked = onBackIconTapped,
         )
@@ -124,7 +125,8 @@ fun SimpleSearchRecommendation(
                 text = recommendation.getDisplayName(", "), modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(),
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color.Gray
 
             )
         }

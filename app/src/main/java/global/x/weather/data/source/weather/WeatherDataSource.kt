@@ -76,7 +76,7 @@ class WeatherDataSource @Inject constructor() {
         val response = weatherApiService.searchCity(city)
         if (response.isSuccessful) {
             response.body()?.let { responseBody ->
-                return Outcome.Success(responseBody.map{ item ->
+                return Outcome.Success(responseBody.map { item ->
                     item.toSearchResultModel()
                 })
             }

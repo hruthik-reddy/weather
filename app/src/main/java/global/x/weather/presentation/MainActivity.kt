@@ -84,6 +84,7 @@ class MainActivity : ComponentActivity() {
                                 onSearchStringChanged = searchViewModel::onSearchStringChanged,
                                 isClearButtonVisible = searchViewModel.isClearSearchIconVisible.observeAsState(),
                                 onRecommendationItemTapped = { searchResultModel ->
+                                    searchViewModel.onSearchRecommendationItemClicked(searchResultModel)
                                     mainViewModel.onShowWeatherDetail(searchResultModel.toFavoriteLocationModel())
                                 },
                                 onSearchFieldValueCleared = searchViewModel::onSearchFieldValueCleared,
@@ -117,6 +118,8 @@ class MainActivity : ComponentActivity() {
                                 paddingValues = it,
                                 onNavigateBack = mainViewModel::onNavigateBack,
                                 weatherDataState = viewModel.forecastedWeatherData.observeAsState(),
+                                onSaveLocationTapped = viewModel::onSaveLocationTapped,
+                                appBarEndIcon = viewModel.favoriteIcon.observeAsState()
                                 )
                         }
                     }
@@ -209,6 +212,8 @@ class MainActivity : ComponentActivity() {
         paddingValues: PaddingValues,
         onNavigateBack: () -> Unit,
         weatherDataState: State<List<WeatherData.Daily>?>,
+        onSaveLocationTapped: () -> Unit,
+        appBarEndIcon: State<Int?>
     ) {
 
         Scaffold(modifier = Modifier.padding(paddingValues)) { it ->
@@ -217,7 +222,8 @@ class MainActivity : ComponentActivity() {
                 paddingValues = it,
                 onAppBarStartIconTapped = onNavigateBack,
                 appbarStartIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
-                onAppBarEndIconTapped = {}
+                onAppBarEndIconTapped = onSaveLocationTapped,
+                appbarEndIcon =   ImageVector.vectorResource(id = appBarEndIcon.value ?: R.drawable.ic_heart),
             )
 
         }

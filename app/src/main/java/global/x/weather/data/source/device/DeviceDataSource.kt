@@ -39,7 +39,7 @@ class DeviceDataSource @Inject constructor(@ApplicationContext private val conte
         if (stringSet.isNullOrEmpty()) return emptyList()
         return stringSet.filterNotNull().map {
             gsonConverter.fromJson(it, SavedLocationModel::class.java)
-        }
+        }.sortedBy { it.name }
     }
 
     fun deleteSavedLocations(locations: List<SavedLocationModel>) {

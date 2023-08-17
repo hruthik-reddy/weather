@@ -43,11 +43,13 @@ import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun WeatherDetailScreen(
     weatherDataState: State<List<WeatherData.Daily>?>,
     paddingValues: PaddingValues,
-    onSearchIconTapped: () -> Unit,
-    onLocationIconTapped: () -> Unit
+    onAppBarStartIconTapped: () -> Unit,
+    onAppBarEndIconTapped: () -> Unit,
+    appbarStartIcon: ImageVector,
+    appbarEndIcon: ImageVector? = null
 ) {
     Scaffold(
         modifier = Modifier.padding(paddingValues)
@@ -55,8 +57,10 @@ fun HomeScreen(
         Screen(
             weatherDataState = weatherDataState,
             paddingValues = it,
-            onSearchIconTapped = onSearchIconTapped,
-            onLocationIconTapped = onLocationIconTapped
+            onAppBarEndIconTapped = onAppBarEndIconTapped,
+            onAppbarStartIconTapped = onAppBarStartIconTapped,
+            appbarStartIcon = appbarStartIcon,
+            appbarEndIcon = appbarEndIcon
 
         )
     }
@@ -66,26 +70,24 @@ fun HomeScreen(
 fun Screen(
     weatherDataState: State<List<WeatherData.Daily>?>,
     paddingValues: PaddingValues,
-    onSearchIconTapped: () -> Unit,
-    onLocationIconTapped: () -> Unit
+    onAppBarEndIconTapped: () -> Unit,
+    onAppbarStartIconTapped: () -> Unit,
+    appbarStartIcon: ImageVector,
+    appbarEndIcon: ImageVector?
 ) {
-    Column() {
+    Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
-            title = { Text("Pokhara") },
-            startIcon = ImageVector.vectorResource(id = R.drawable.ic_map),
-            startIconContentDescription = stringResource(id = R.string.content_description_saved_regions),
-            onStartIconClicked = onLocationIconTapped,
-            endIcon = ImageVector.vectorResource(id = R.drawable.ic_search),
-            endIconContentDescription = stringResource(id = R.string.content_description_search_regions),
-            onEndIconClicked = onSearchIconTapped
+            title = { Text(weatherDataState.value?.firstOrNull()?.location ?: "") },
+            startIcon = appbarStartIcon,
+            onStartIconClicked = onAppbarStartIconTapped,
+            endIcon = appbarEndIcon,
+            onEndIconClicked = onAppBarEndIconTapped
         )
         Content(
             weatherDataState = weatherDataState,
         )
 
     }
-
-
 }
 
 @Composable

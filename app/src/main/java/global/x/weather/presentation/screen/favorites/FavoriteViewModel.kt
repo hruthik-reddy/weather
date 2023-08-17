@@ -6,10 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import global.x.weather.domain.Outcome
 import global.x.weather.domain.models.FavoriteLocationModel
-import global.x.weather.domain.use_cases.device.ClearSavedLocationsUseCase
 import global.x.weather.domain.use_cases.device.GetSavedLocationsUseCase
 import global.x.weather.domain.use_cases.device.GetSystemCurrentTimeInMillisUseCase
-import global.x.weather.domain.use_cases.device.UpdateSavedLocationsUseCase
 import global.x.weather.domain.use_cases.weather.FetchHourlyForecastDataUseCase
 import global.x.weather.infrastructure.util.DateUtil
 import global.x.weather.presentation.screen.home.model.WeatherData
@@ -18,11 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase,
+     getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase,
     val getSavedLocationsUseCase: GetSavedLocationsUseCase,
     val forecastDataUseCase: FetchHourlyForecastDataUseCase,
-    val clearSavedLocationsUseCase: ClearSavedLocationsUseCase,
-    val updateSavedLocationsUseCase: UpdateSavedLocationsUseCase
 ) : ViewModel() {
     val dateState: MutableLiveData<String> = MutableLiveData("")
 
@@ -31,29 +27,21 @@ class FavoriteViewModel @Inject constructor(
 
     init {
         dateState.value = DateUtil.getDateFromEpoch(getSystemCurrentTimeInMillisUseCase.invoke())
-        clearSavedLocationsUseCase.invoke()
-        updateSavedLocationsUseCase.invoke(
-            listOf(
-                FavoriteLocationModel(
-                    id = 0,
-                    name = "Pokhara",
-                    region = "",
-                    country = "Nepal",
-                    isDefault = false,
-                ),
-                FavoriteLocationModel(
-                    id = 2,
-                    name = "New Delhi",
-                    region = "Delhi",
-                    country = "India",
-                    isDefault = false,
-                )
-            )
-        )
-        favoriteLocationDataList.value = getSavedLocationsUseCase.invoke()
+        refreshFavoriteData()
     }
 
-    fun onFavoriteItemTapped(data: FavoriteLocationModel) {
+    fun onFavoriteItemClicked(data: FavoriteLocationModel) {
+
+    }
+
+    private fun refreshFavoriteData() {
+        if (getSavedLocationsUseCase.invoke().isEmpty()) return
+        favoriteLocationDataList.value = getSavedLocationsUseCase.invoke()
+        fetchWeatherData()
+
+    }
+
+    private fun fetchWeatherData() {
         viewModelScope.launch {
             getSavedLocationsUseCase.invoke().forEach {
                 when (val forecastData = forecastDataUseCase.invoke(it.name, 3)) {

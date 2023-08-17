@@ -10,28 +10,32 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import global.x.weather.R
+import global.x.weather.domain.models.FavoriteLocationModel
 import global.x.weather.domain.models.SearchResultModel
+import global.x.weather.domain.models.WeatherData
 import global.x.weather.infrastructure.util.observeAsAction
 import global.x.weather.presentation.framework.theme.XWeatherTheme
 import global.x.weather.presentation.screen.WeatherNavigationRoute
 import global.x.weather.presentation.screen.favorites.FavoriteScreen
 import global.x.weather.presentation.screen.favorites.FavoriteViewModel
-import global.x.weather.presentation.screen.home.HomeScreen
 import global.x.weather.presentation.screen.home.HomeViewModel
+import global.x.weather.presentation.screen.home.WeatherDetailScreen
 import global.x.weather.presentation.screen.search.SearchScreen
 import global.x.weather.presentation.screen.search.SearchViewModel
+import global.x.weather.presentation.screen.weather_detail.WeatherDetailViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,9 +47,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private val mainViewModel: MainViewModel by viewModels()
-    private val homeViewModel: HomeViewModel by viewModels()
-    private val searchViewModel: SearchViewModel by viewModels()
-    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,20 +60,24 @@ class MainActivity : ComponentActivity() {
                     startDestination = WeatherNavigationRoute.Home.getName()
                 ) {
                     composable(
-                        WeatherNavigationRoute.Home.getName(),
-                        WeatherNavigationRoute.Home.args
+                        WeatherNavigationRoute.Home.getName()
                     ) {
-                        Scaffold() {
-                            HomeScreenContent(
+                        val homeViewModel = hiltViewModel<HomeViewModel>()
+
+                        Scaffold {
+                            HomeScreenPage(
                                 paddingValues = it,
                                 onSearchIconTapped = mainViewModel::onNavigateToSearch,
-                                onLocationIconTapped = mainViewModel::onNavigateToFavorites
-                            )
+                                onLocationIconTapped = mainViewModel::onNavigateToFavorites,
+                                weatherDataState = homeViewModel.forecastedWeatherData.observeAsState(),
+
+                                )
                         }
                     }
                     composable(WeatherNavigationRoute.Search.getName()) {
+                        val searchViewModel = hiltViewModel<SearchViewModel>()
                         Scaffold() {
-                            SearchScreenContent(
+                            SearchPage(
                                 paddingValues = it,
                                 onBackIconTapped = mainViewModel::onNavigateBack,
                                 searchStringState = searchViewModel.searchString.observeAsState(),
@@ -90,14 +95,29 @@ class MainActivity : ComponentActivity() {
                     composable(WeatherNavigationRoute.Favorite.getName()) {
                         val viewModel = hiltViewModel<FavoriteViewModel>()
                         Scaffold() {
-                            FavoriteScreen(
+                            FavoriteScreenPage(
                                 paddingValues = it,
                                 onBackIconClicked = mainViewModel::onNavigateBack,
                                 dateState = viewModel.dateState.observeAsState(),
                                 favoriteLocationDataList = viewModel.favoriteLocationDataList.observeAsState(),
-                                onFavoriteItemTapped = viewModel::onFavoriteItemTapped
-                            )
+                                onFavoriteItemTapped = { favoriteLocationModel ->
+                                    mainViewModel.onShowWeatherDetail(favoriteLocationModel)
+                                },)
 
+
+                        }
+                    }
+                    composable(
+                        route = WeatherNavigationRoute.SearchResult.getName(), arguments =
+                        WeatherNavigationRoute.SearchResult.args
+                    ) {
+                        val viewModel = hiltViewModel<WeatherDetailViewModel>()
+                        Scaffold() {
+                            SearchDetailPage(
+                                paddingValues = it,
+                                onNavigateBack = mainViewModel::onNavigateBack,
+                                weatherDataState = viewModel.forecastedWeatherData.observeAsState(),
+                                )
                         }
                     }
                     registerObservers(navController = navController)
@@ -112,8 +132,7 @@ class MainActivity : ComponentActivity() {
         mainViewModel.onShowWeatherDetail.observeAsAction(
             lifecycleOwner = this,
             action = {
-
-                navController.navigate("${WeatherNavigationRoute.Home.getName()}/${it.toStringArg()}")
+                navController.navigate(WeatherNavigationRoute.SearchResult.getNavigationRequest(it.toStringArg()))
             },
             onActionResolved = mainViewModel::onShowWeatherDetailResolved
         )
@@ -144,41 +163,69 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun FavoriteLocationContent(paddingValues: PaddingValues) {
-        Scaffold(modifier = Modifier.padding(paddingValues)) {
-            FavoriteScreen(
-                paddingValues = it,
-                onBackIconClicked = {},
-                dateState = favoriteViewModel.dateState.observeAsState(),
-                favoriteLocationDataList = favoriteViewModel.favoriteLocationDataList.observeAsState(),
-                onFavoriteItemTapped = favoriteViewModel::onFavoriteItemTapped
-            )
-        }
+    private fun FavoriteScreenPage(
+        paddingValues: PaddingValues,
+        onBackIconClicked: () -> Unit,
+        dateState: State<String?>,
+        favoriteLocationDataList: State<List<FavoriteLocationModel>?>,
+        onFavoriteItemTapped: (favoriteLocationModel: FavoriteLocationModel) -> Unit
+    ) {
+
+        FavoriteScreen(
+            paddingValues = paddingValues,
+            onBackIconClicked = onBackIconClicked,
+            dateState = dateState,
+            favoriteLocationDataList = favoriteLocationDataList,
+            onFavoriteItemTapped = onFavoriteItemTapped,
+        )
+
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun HomeScreenContent(
+    private fun HomeScreenPage(
         paddingValues: PaddingValues,
         onSearchIconTapped: () -> Unit,
-        onLocationIconTapped: () -> Unit
+        onLocationIconTapped: () -> Unit,
+        weatherDataState: State<List<WeatherData.Daily>?>
     ) {
 
         Scaffold(modifier = Modifier.padding(paddingValues)) { it ->
-            HomeScreen(
-                weatherDataState = homeViewModel.forecastedWeatherData.observeAsState(),
+            WeatherDetailScreen(
+                weatherDataState = weatherDataState,
                 paddingValues = it,
-                onSearchIconTapped = onSearchIconTapped,
-                onLocationIconTapped = onLocationIconTapped
+                onAppBarStartIconTapped = onLocationIconTapped,
+                onAppBarEndIconTapped = onSearchIconTapped,
+                appbarStartIcon = ImageVector.vectorResource(id = R.drawable.ic_map),
+                appbarEndIcon = ImageVector.vectorResource(id = R.drawable.ic_search)
             )
 
         }
-
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun SearchScreenContent(
+    private fun SearchDetailPage(
+        paddingValues: PaddingValues,
+        onNavigateBack: () -> Unit,
+        weatherDataState: State<List<WeatherData.Daily>?>,
+    ) {
+
+        Scaffold(modifier = Modifier.padding(paddingValues)) { it ->
+            WeatherDetailScreen(
+                weatherDataState = weatherDataState,
+                paddingValues = it,
+                onAppBarStartIconTapped = onNavigateBack,
+                appbarStartIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
+                onAppBarEndIconTapped = {}
+            )
+
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun SearchPage(
         paddingValues: PaddingValues,
         onBackIconTapped: () -> Unit,
         searchStringState: State<String?>,
@@ -202,19 +249,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun Greeting(name: String, modifier: Modifier = Modifier) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-    }
-
-    @Preview(showBackground = true)
-    @Composable
-    fun GreetingPreview() {
-        XWeatherTheme {
-            Greeting("Android")
-        }
-    }
 }

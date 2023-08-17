@@ -1,28 +1,57 @@
 package global.x.weather.presentation
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import global.x.weather.domain.Outcome
 import global.x.weather.domain.models.FavoriteLocationModel
+import global.x.weather.domain.use_cases.device.GetDeviceRegionUseCase
+import global.x.weather.domain.use_cases.device.GetSavedLocationsUseCase
+import global.x.weather.domain.use_cases.device.UpdateSavedLocationsUseCase
+import global.x.weather.domain.use_cases.weather.SearchCityUseCase
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    val deviceRegionUseCase: GetDeviceRegionUseCase,
+    val searchCityUseCase: SearchCityUseCase,
+    val updateSavedLocationsUseCase: UpdateSavedLocationsUseCase,
+    val getSavedLocationsUseCase: GetSavedLocationsUseCase
+) : ViewModel() {
     val onNavigateToSearch: MutableLiveData<Boolean> = MutableLiveData(false)
     val onNavigateToFavorites: MutableLiveData<Boolean> = MutableLiveData(false)
     val onNavigateBack: MutableLiveData<Boolean> = MutableLiveData(false)
     val onShowWeatherDetail: MutableLiveData<FavoriteLocationModel> = MutableLiveData()
 
     init {
-        onShowWeatherDetail(
-            FavoriteLocationModel(
-                id = 0,
-                name = "Pokhara",
-                country = "Nepal",
-                region = "",
-                weatherData = null
-            )
-        )
+        refreshFavoriteLocationData()
+    }
+
+    private fun refreshFavoriteLocationData() {
+        if (getSavedLocationsUseCase.invoke().isNotEmpty()) return
+        val deviceLocation = deviceRegionUseCase.invoke()
+        viewModelScope.launch {
+            val result = searchCityUseCase.invoke(deviceLocation)
+            when (result) {
+                is Outcome.Success -> {
+                    val searchResultModel = result.data.firstOrNull()
+                    if (searchResultModel == null) {
+                        Log.e("XWeather", "Location data could not be determined")
+                    } else {
+                        updateSavedLocationsUseCase.invoke(listOf(searchResultModel.toFavoriteLocationModel()))
+                        Log.e("XWeather", "Location data successfully saved")
+                    }
+                }
+
+                is Outcome.Error -> {
+                    Log.e("XWeather", "Unknown network error")
+                }
+            }
+        }
+
     }
 
 

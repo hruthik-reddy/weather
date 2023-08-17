@@ -1,6 +1,5 @@
 package global.x.weather.presentation.screen.search
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,7 +46,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onSearchRecommendationItemClicked(result: SearchResultModel) {
-        Log.d("Message", "Search Item clicked")
+        onSearchFieldValueCleared()
     }
 
     fun onSearchFieldValueCleared() {

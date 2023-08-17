@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
     val onShowWeatherDetail: MutableLiveData<FavoriteLocationModel> = MutableLiveData()
 
     init {
-        refreshFavoriteLocationData()
+//        refreshFavoriteLocationData()
     }
 
     private fun refreshFavoriteLocationData() {
@@ -41,7 +41,13 @@ class MainViewModel @Inject constructor(
                     if (searchResultModel == null) {
                         Log.e("XWeather", "Location data could not be determined")
                     } else {
-                        updateSavedLocationsUseCase.invoke(listOf(searchResultModel.toFavoriteLocationModel()))
+                        updateSavedLocationsUseCase.invoke(listOf(FavoriteLocationModel(
+                            id = searchResultModel.id,
+                            name = searchResultModel.name,
+                            region = searchResultModel.region,
+                            country = searchResultModel.country,
+                            isDefault = true
+                        )))
                         Log.e("XWeather", "Location data successfully saved")
                     }
                 }

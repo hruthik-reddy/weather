@@ -1,12 +1,16 @@
 package global.x.weather.presentation.screen.favorites
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -163,8 +167,15 @@ private fun FavoriteLocationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(data.getDisplayName())
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.width(150.dp)) {
+                Text(data.getDisplayName())
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                    .weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 SimpleWeatherStat(
                     stat = String.format(
                         Locale.ENGLISH,
@@ -174,7 +185,6 @@ private fun FavoriteLocationItem(
                     icon = { SimpleTemperature() },
                     title = null
                 )
-                MediumHorizontalSpacer()
                 SimpleWeatherStat(
                     stat = String.format(
                         Locale.ENGLISH,
@@ -184,7 +194,6 @@ private fun FavoriteLocationItem(
                     icon = { SimpleHumidity() },
                     title = null
                 )
-                MediumHorizontalSpacer()
                 SimpleWeatherStat(
                     stat = String.format(
                         Locale.ENGLISH,

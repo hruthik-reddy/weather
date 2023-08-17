@@ -52,7 +52,7 @@ open class HomeViewModel @Inject constructor(
         val searchString = "${location?.name} ${location?.country}"
         viewModelScope.launch {
             val response =
-                fetchHourlyForecastDataUseCase.invoke(searchString, 3)
+                fetchHourlyForecastDataUseCase.invoke(searchString, 5)
             if (response is Outcome.Success) {
                 filterForecastedWeatherResult(response.data)
             }

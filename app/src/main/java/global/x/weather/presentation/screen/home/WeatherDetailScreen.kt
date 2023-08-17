@@ -1,13 +1,16 @@
 package global.x.weather.presentation.screen.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -31,6 +35,7 @@ import global.x.weather.presentation.framework.components.LargeHorizontalSpacer
 import global.x.weather.presentation.framework.components.LargeVerticalSpacer
 import global.x.weather.presentation.framework.components.MediumHorizontalSpacer
 import global.x.weather.presentation.framework.components.MediumVerticalSpacer
+import global.x.weather.presentation.framework.components.SimpleHorizontalLine
 import global.x.weather.presentation.framework.components.SimpleHumidity
 import global.x.weather.presentation.framework.components.SimpleHumidityStat
 import global.x.weather.presentation.framework.components.SimpleRain
@@ -39,7 +44,9 @@ import global.x.weather.presentation.framework.components.SimpleTemperature
 import global.x.weather.presentation.framework.components.SimpleWeatherCondition
 import global.x.weather.presentation.framework.components.SimpleWeatherStat
 import global.x.weather.presentation.framework.components.SimpleWindStat
+import global.x.weather.presentation.framework.components.SmallVerticalSpacer
 import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
+import global.x.weather.presentation.framework.components.TinyVerticalSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,13 +103,12 @@ fun Content(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .verticalScroll(state = rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MediumVerticalSpacer()
+        SmallVerticalSpacer()
         //Date
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -116,58 +122,61 @@ fun Content(
                 )
             )
             TinyHorizontalSpacer()
-            weatherDataState.value?.let {
-                Text(DateUtil.getFormattedDateMonth(it[0].localTime))
-            }
+            Text(
+                DateUtil.getFormattedDateMonth(
+                    weatherDataState.value?.firstOrNull()?.localTime ?: ""
+                )
+            )
         }
-        MediumVerticalSpacer()
+        SmallVerticalSpacer()
 
         //Temperature
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.padding(start = 38.dp)
         ) {
-            weatherDataState.value?.let {
-                Text(it[0].tempAverage.toString(), fontSize = 130.sp)
-                Text(stringResource(id = R.string.degree_centigrade_placeholder), fontSize = 38.sp)
-            }
+            Text(
+                ((weatherDataState.value?.firstOrNull()?.tempAverage ?: "0").toString()),
+                fontSize = 130.sp
+            )
+            Text(stringResource(id = R.string.degree_centigrade_placeholder), fontSize = 38.sp)
         }
 
-        MediumVerticalSpacer()
+        SmallVerticalSpacer()
         //weather condition
-        weatherDataState.value?.let {
-            SimpleWeatherCondition(
-                iconResource = R.drawable.ic_cloudy,
-                description = it[0].conditionDescription
-            )
-        }
+        SimpleWeatherCondition(
+            iconResource = R.drawable.ic_cloudy,
+            description = weatherDataState.value?.firstOrNull()?.conditionDescription ?: ""
+        )
 
         MediumVerticalSpacer()
 
         //Weather stat
-        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            weatherDataState.value?.let {
-                SimpleWindStat(wind = it[0].windSpeed)
-                SimpleHumidityStat(humidity = it[0].humidity)
-                SimpleRainStat(rain = it[0].precipitation)
+        Row(
+            horizontalArrangement = Arrangement.Center, modifier = Modifier
+                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                SimpleWindStat(wind = weatherDataState.value?.firstOrNull()?.windSpeed ?: 0f)
+
             }
+            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                SimpleHumidityStat(humidity = weatherDataState.value?.firstOrNull()?.humidity ?: 0f)
 
+            }
+            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                SimpleRainStat(rain = weatherDataState.value?.firstOrNull()?.precipitation ?: 0f)
+
+            }
         }
 
         MediumVerticalSpacer()
-        weatherDataState.value?.let {
-            HourlyWeatherStat(
-                items = it[0].hourlyData ?: mutableListOf()
-
-            )
-        }
-
-
+        HourlyWeatherStat(
+            items = weatherDataState.value?.firstOrNull()?.hourlyData ?: mutableListOf()
+        )
+        LargeVerticalSpacer()
+        DailyWeatherForecast(weatherDataState.value ?: emptyList())
         MediumVerticalSpacer()
-        weatherDataState.value?.let {
-            DailyWeatherForecast(items = it)
-
-        }
     }
 
 }
@@ -194,49 +203,77 @@ fun DailyWeatherForecast(items: List<WeatherData.Daily?>) {
         verticalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
-                contentDescription = stringResource(
-                    id = R.string.content_description_none
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .width(100.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
+                    contentDescription = stringResource(
+                        id = R.string.content_description_none
+                    )
                 )
-            )
-            LargeHorizontalSpacer()
-            SimpleTemperature()
-            MediumHorizontalSpacer()
-            SimpleHumidity()
-            MediumHorizontalSpacer()
-            SimpleRain()
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SimpleTemperature()
+                SimpleHumidity()
+                SimpleRain()
+            }
+
         }
-        LargeVerticalSpacer()
+        SimpleHorizontalLine()
         Column() {
             items.forEach {
                 it?.let {
-                    Row {
-                        Text(DateUtil.getFormattedDateMonthShort(it.date))
-                        LargeHorizontalSpacer()
-                        Text(
-                            String.format(
-                                stringResource(id = R.string.quantity_centigrade),
-                                it.tempAverage
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(100.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(DateUtil.getFormattedDateMonthShort(it.date))
+
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                String.format(
+                                    stringResource(id = R.string.quantity_centigrade),
+                                    it.tempAverage
+                                )
                             )
-                        )
-                        MediumHorizontalSpacer()
-                        Text(
-                            String.format(
-                                stringResource(id = R.string.quantity_percent),
-                                it.humidity
+                            Text(
+                                String.format(
+                                    stringResource(id = R.string.quantity_percent),
+                                    it.humidity
+                                )
                             )
-                        )
-                        MediumHorizontalSpacer()
-                        Text(
-                            String.format(
-                                stringResource(id = R.string.quantity_percent),
-                                it.precipitation
+                            Text(
+                                String.format(
+                                    stringResource(id = R.string.quantity_percent),
+                                    it.precipitation
+                                )
                             )
-                        )
+                        }
+
                     }
                 }
+                TinyVerticalSpacer()
 
             }
 

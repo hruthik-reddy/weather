@@ -6,8 +6,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -70,7 +74,6 @@ class MainActivity : ComponentActivity() {
                                 onSearchIconTapped = mainViewModel::onNavigateToSearch,
                                 onLocationIconTapped = mainViewModel::onNavigateToFavorites,
                                 weatherDataState = homeViewModel.forecastedWeatherData.observeAsState(),
-
                                 )
                         }
                     }
@@ -84,7 +87,9 @@ class MainActivity : ComponentActivity() {
                                 onSearchStringChanged = searchViewModel::onSearchStringChanged,
                                 isClearButtonVisible = searchViewModel.isClearSearchIconVisible.observeAsState(),
                                 onRecommendationItemTapped = { searchResultModel ->
-                                    searchViewModel.onSearchRecommendationItemClicked(searchResultModel)
+                                    searchViewModel.onSearchRecommendationItemClicked(
+                                        searchResultModel
+                                    )
                                     mainViewModel.onShowWeatherDetail(searchResultModel.toFavoriteLocationModel())
                                 },
                                 onSearchFieldValueCleared = searchViewModel::onSearchFieldValueCleared,
@@ -103,7 +108,8 @@ class MainActivity : ComponentActivity() {
                                 favoriteLocationDataList = viewModel.favoriteLocationDataList.observeAsState(),
                                 onFavoriteItemTapped = { favoriteLocationModel ->
                                     mainViewModel.onShowWeatherDetail(favoriteLocationModel)
-                                },)
+                                },
+                            )
 
 
                         }
@@ -120,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                 weatherDataState = viewModel.forecastedWeatherData.observeAsState(),
                                 onSaveLocationTapped = viewModel::onSaveLocationTapped,
                                 appBarEndIcon = viewModel.favoriteIcon.observeAsState()
-                                )
+                            )
                         }
                     }
                     registerObservers(navController = navController)
@@ -223,7 +229,9 @@ class MainActivity : ComponentActivity() {
                 onAppBarStartIconTapped = onNavigateBack,
                 appbarStartIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
                 onAppBarEndIconTapped = onSaveLocationTapped,
-                appbarEndIcon =   ImageVector.vectorResource(id = appBarEndIcon.value ?: R.drawable.ic_heart),
+                appbarEndIcon = ImageVector.vectorResource(
+                    id = appBarEndIcon.value ?: R.drawable.ic_heart
+                ),
             )
 
         }

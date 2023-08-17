@@ -1,5 +1,6 @@
 package global.x.weather.infrastructure.util
 
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -9,8 +10,11 @@ class DateUtil {
         fun getFormattedDateMonth(date: String): String {
             val dateParser = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH)
             val formatter = SimpleDateFormat("MMM d", Locale.ENGLISH)
-
-            return formatter.format(dateParser.parse(date) ?: "")
+            return try {
+                formatter.format(dateParser.parse(date) ?: "")
+            } catch (e: Exception) {
+                ""
+            }
         }
 
         fun getFormattedDateMonthShort(date: String): String {

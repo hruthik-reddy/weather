@@ -2,7 +2,12 @@ package global.x.weather.presentation.framework.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import global.x.weather.R
 
 @Composable
@@ -116,16 +123,34 @@ private fun SimpleDrawableIcon(
 }
 
 @Composable
-fun SimpleWeatherCondition(iconResource: Int, description: String){
+fun SimpleWeatherCondition(iconResource: Int, description: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(imageVector = ImageVector.vectorResource(id = iconResource),
-        contentDescription = stringResource(id = R.string.content_description_none))
+        Icon(
+            imageVector = ImageVector.vectorResource(id = iconResource),
+            contentDescription = stringResource(id = R.string.content_description_none)
+        )
         Text(text = description)
     }
 }
 
 @Composable
- fun SimpleWeatherStat(
+fun SimpleHorizontalLine() {
+    Box(modifier = Modifier
+        .padding(8.dp)
+        .fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .background(Color.Gray)
+                .fillMaxWidth()
+                .height(1.dp)
+        )
+    }
+
+
+}
+
+@Composable
+fun SimpleWeatherStat(
     title: String? = null,
     icon: @Composable () -> Unit,
     stat: String,
@@ -133,7 +158,7 @@ fun SimpleWeatherCondition(iconResource: Int, description: String){
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         icon.invoke()
         Text(text = stat)
-        title?.let{
+        title?.let {
             Text(text = title)
         }
     }

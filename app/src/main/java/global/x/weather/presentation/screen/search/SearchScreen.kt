@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import global.x.weather.R
@@ -69,7 +70,7 @@ fun Content(
     onSearchFieldValueCleared: () -> Unit,
     isClearSearchQueryVisible: State<Boolean?>
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         OutlinedTextField(
             value = searchFieldValue.value ?: "",
             onValueChange = onSearchFieldValueChanged,
@@ -122,7 +123,9 @@ fun SimpleSearchRecommendation(
             Text(
                 text = recommendation.getDisplayName(", "), modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                overflow = TextOverflow.Ellipsis
+
             )
         }
 

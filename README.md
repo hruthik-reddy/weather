@@ -12,6 +12,7 @@ A simple weather app that shows daily weather conditions, and weather forecasts;
 ![image](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/800954e0-ffc5-4e0c-90ae-6a540b61ad06)
 
 ### Recording
+[recording-implementation-1.webm](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/a7fd5955-d34f-4763-a7e2-b0f0f50410b0)
 
 
 ### Setup Instruction
@@ -36,12 +37,13 @@ You can also get the latest debug APK file directly from the CI pipeline
 
 ### Technologies
 
-Main stack: 
-
     - MVVM with Clean Architecture for design pattern
     - Hilt for dependency injection
     - Jetpack Compose for UI component design
     - Retrofit & OkHttp for network requests
+
+### API
+This project uses API data from [weatherapi.com](https://www.weatherapi.com/)
     
 ### Data Flow
 <img width="929" alt="DFD" src="https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/2c562b5b-a52b-4dd9-9f9e-4e598fdfaa35">
@@ -100,7 +102,7 @@ Main stack:
 ```
 
 ### Design Inspiration
-- [Offdesignarea's Weather App design in Dribbble](https://dribbble.com/shots/17003404-Weather-App) 
+- [Offdesignarea's Weather App design in Dribbble](https://dribbble.com/shots/17003404-Weather-App)
 
 ### License
 <img src="https://img.shields.io/badge/license-MIT-brightgreen?style=flat-square"/>

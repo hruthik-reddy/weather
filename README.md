@@ -14,40 +14,14 @@ A simple weather app that shows daily weather conditions, and weather forecasts;
 ### Recording
 [recording-implementation-1.webm](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/a7fd5955-d34f-4763-a7e2-b0f0f50410b0)
 
-
-### Setup Instruction
-You can setup/run the project in two ways - either by downloading the project and compiling locally using Android Studio, or by downloading and installing the debug APK artifact straight from the build pipeline.
-
-#### Run the project locally
-
-> Make sure you have all the local dependencies setup i.e Android Studio & the Android SDK, [check here](https://developer.android.com/studio/install)
-
-- First off, `git clone` this project
-    - `git clone https://github.com/bijaykumarpun/weather-app-clean-architecture`
-- Open the project in `Android Studio`pointing to the root folder's `build.gradle` file
-- After successfully building the project, run `./gradlew installDebug` in the root project directory to install in any of the available device/emulator
-
-#### Download APK from the CI pipeline
-You can also get the latest debug APK file directly from the CI pipeline
-- Navigate to the `Actions` tab of this GitHub project
-- Look for the most recent CI run
-- Under `Artifact` section look for `debug-build` file
-- Click `debug-build` to download the file
-- Extract & install
-
 ### Technologies
 
     - MVVM with Clean Architecture for design pattern
     - Hilt for dependency injection
     - Jetpack Compose for UI component design
     - Retrofit & OkHttp for network requests
-
 ### API
 This project uses API data from [weatherapi.com](https://www.weatherapi.com/)
-    
-### Data Flow
-<img width="929" alt="DFD" src="https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/2c562b5b-a52b-4dd9-9f9e-4e598fdfaa35">
-
 
 ### Folder Structure
 ```bash
@@ -100,6 +74,29 @@ This project uses API data from [weatherapi.com](https://www.weatherapi.com/)
 ├── local.properties
 └── settings.gradle
 ```
+
+### Data Flow
+<img width="929" alt="DFD" src="https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/2c562b5b-a52b-4dd9-9f9e-4e598fdfaa35">
+
+### Setup Instruction
+You can setup/run the project in two ways - either by downloading the project and compiling locally using Android Studio, or by downloading and installing the debug APK artifact straight from the build pipeline.
+
+#### Run the project locally
+
+> Make sure you have all the local dependencies setup i.e Android Studio & the Android SDK, [check here](https://developer.android.com/studio/install)
+
+- First off, `git clone` this project
+    - `git clone https://github.com/bijaykumarpun/weather-app-clean-architecture`
+- Open the project in `Android Studio`pointing to the root folder's `build.gradle` file
+- After successfully building the project, run `./gradlew installDebug` in the root project directory to install in any of the available device/emulator
+
+#### Download APK from the CI pipeline
+You can also get the latest debug APK file directly from the CI pipeline
+- Navigate to the `Actions` tab of this GitHub project
+- Look for the most recent CI run
+- Under `Artifact` section look for `debug-build` file
+- Click `debug-build` to download the file
+- Extract & install
 
 ### Design Inspiration
 - [Offdesignarea's Weather App design in Dribbble](https://dribbble.com/shots/17003404-Weather-App)

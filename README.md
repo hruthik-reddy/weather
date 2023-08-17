@@ -2,17 +2,21 @@
  <div style={display:flex;}>
 
 <img src="https://img.shields.io/github/languages/code-size/bijaykumarpun/weather-app-clean-architecture?style=flat-square"/>
-<!-- <img src="https://img.shields.io/github/downloads/bijaykumarpun/weather-app-clean-architecture/total"/> -->
-<img src="https://img.shields.io/github/last-commit/bijaykumarpun/weather-app-clean-architecture?style=flat-square"/>
+
+<img src="https://img.shields.io/github/last-commit/bijaykumarpun/weather-app-clean-architecture?style-flat-square"/>
+
 </div><br>
 
 A simple weather app that shows daily weather conditions, and weather forecasts; built with `Kotlin` using `MVVM` and `Clean Architecture` design pattern.
 
 ### Screenshots
-![image](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/800954e0-ffc5-4e0c-90ae-6a540b61ad06)
+![screenshot](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/16f0084b-deb3-457a-84d9-6092aac95bee)
+
 
 ### Recording
-[recording-implementation-1.webm](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/a7fd5955-d34f-4763-a7e2-b0f0f50410b0)
+[recording-implementation-1.webm](https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/fb3aa458-ca48-422f-acfc-1f440fa6eadc)
+
+
 
 ### Technologies
 
@@ -76,7 +80,8 @@ This project uses API data from [weatherapi.com](https://www.weatherapi.com/)
 ```
 
 ### Data Flow
-<img width="929" alt="DFD" src="https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/2c562b5b-a52b-4dd9-9f9e-4e598fdfaa35">
+<img width="929" alt="DFD" src="https://github.com/bijaykumarpun/weather-app-clean-architecture/assets/13991373/ad496208-1e07-42ac-8c3b-81a33d3394fc">
+
 
 ### Setup Instruction
 You can setup/run the project in two ways - either by downloading the project and compiling locally using Android Studio, or by downloading and installing the debug APK artifact straight from the build pipeline.

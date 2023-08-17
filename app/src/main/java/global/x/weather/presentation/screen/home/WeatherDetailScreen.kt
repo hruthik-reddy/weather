@@ -1,6 +1,5 @@
 package global.x.weather.presentation.screen.home
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,9 +43,13 @@ import global.x.weather.presentation.framework.components.TinyHorizontalSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun WeatherDetailScreen(
     weatherDataState: State<List<WeatherData.Daily>?>,
     paddingValues: PaddingValues,
+    onAppBarStartIconTapped: () -> Unit,
+    onAppBarEndIconTapped: () -> Unit,
+    appbarStartIcon: ImageVector,
+    appbarEndIcon: ImageVector? = null
 ) {
     Scaffold(
         modifier = Modifier.padding(paddingValues)
@@ -55,6 +57,11 @@ fun HomeScreen(
         Screen(
             weatherDataState = weatherDataState,
             paddingValues = it,
+            onAppBarEndIconTapped = onAppBarEndIconTapped,
+            onAppbarStartIconTapped = onAppBarStartIconTapped,
+            appbarStartIcon = appbarStartIcon,
+            appbarEndIcon = appbarEndIcon
+
         )
     }
 }
@@ -63,25 +70,24 @@ fun HomeScreen(
 fun Screen(
     weatherDataState: State<List<WeatherData.Daily>?>,
     paddingValues: PaddingValues,
+    onAppBarEndIconTapped: () -> Unit,
+    onAppbarStartIconTapped: () -> Unit,
+    appbarStartIcon: ImageVector,
+    appbarEndIcon: ImageVector?
 ) {
-    Column() {
+    Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
-            title = { Text("Pokhara") },
-            startIcon = ImageVector.vectorResource(id = R.drawable.ic_map),
-            startIconContentDescription = stringResource(id = R.string.content_description_saved_regions),
-            onStartIconClicked = { /*TODO*/ },
-            endIcon = ImageVector.vectorResource(id = R.drawable.ic_search),
-            endIconContentDescription = stringResource(id = R.string.content_description_search_regions)
-        ) {
-
-        }
+            title = { Text(weatherDataState.value?.firstOrNull()?.location ?: "") },
+            startIcon = appbarStartIcon,
+            onStartIconClicked = onAppbarStartIconTapped,
+            endIcon = appbarEndIcon,
+            onEndIconClicked = onAppBarEndIconTapped
+        )
         Content(
             weatherDataState = weatherDataState,
         )
 
     }
-
-
 }
 
 @Composable

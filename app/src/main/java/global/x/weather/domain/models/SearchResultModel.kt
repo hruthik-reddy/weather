@@ -8,7 +8,16 @@ data class SearchResultModel(
     val region: String,
     val country: String,
 ) {
-    fun getDisplayName( delimiter: String): String {
+    fun getDisplayName(delimiter: String): String {
         return StringUtil.getDisplayName(name, region, country, delimiter)
+    }
+
+    fun toFavoriteLocationModel(): FavoriteLocationModel {
+        return FavoriteLocationModel(
+            id = id,
+            name = name,
+            region = region,
+            country = country
+        )
     }
 }

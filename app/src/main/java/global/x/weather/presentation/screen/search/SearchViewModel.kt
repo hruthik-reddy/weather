@@ -19,7 +19,7 @@ class SearchViewModel @Inject constructor(
 ) :
     ViewModel() {
     val searchString: MutableLiveData<String> = MutableLiveData("")
-    val autocompleteResult: MutableLiveData<List<SearchResultModel>?> = MutableLiveData()
+    val autocompleteResult: MutableLiveData<List<SearchResultModel>> = MutableLiveData()
     val errorMessage: MutableLiveData<String> = MutableLiveData("")
     val isClearSearchIconVisible: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -46,7 +46,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun onSearchItemClicked(result: SearchResultModel) {
+    fun onSearchRecommendationItemClicked(result: SearchResultModel) {
         Log.d("Message", "Search Item clicked")
     }
 

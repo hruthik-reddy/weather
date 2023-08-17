@@ -1,44 +1,38 @@
 package global.x.weather.presentation.screen.home
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import global.x.weather.domain.Outcome
 import global.x.weather.domain.models.WeatherData
+import global.x.weather.domain.use_cases.device.GetDeviceRegionUseCase
 import global.x.weather.domain.use_cases.device.GetSystemCurrentTimeInMillisUseCase
-import global.x.weather.domain.use_cases.weather.FetchCurrentWeatherDataUseCase
 import global.x.weather.domain.use_cases.weather.FetchHourlyForecastDataUseCase
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val fetchCurrentWeatherDataUseCase: FetchCurrentWeatherDataUseCase,
-    private val fetchHourlyForecastDataUseCase: FetchHourlyForecastDataUseCase,
-    private val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase
+open class HomeViewModel @Inject constructor(
+    val savedStateHandle: SavedStateHandle,
+    val fetchHourlyForecastDataUseCase: FetchHourlyForecastDataUseCase,
+    private val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase,
+    private val deviceRegionUseCase: GetDeviceRegionUseCase
 ) : ViewModel() {
-    val currentWeatherData: MutableLiveData<WeatherData.Daily> = MutableLiveData()
     val forecastedWeatherData: MutableLiveData<List<WeatherData.Daily>> = MutableLiveData()
 
     init {
-        onFetchForecastedWeatherData()
+        fetchDefaultLocationWeatherData()
     }
 
-    fun onFetchCurrentWeatherData() {
-        viewModelScope.launch {
-            val response = fetchCurrentWeatherDataUseCase.invoke("Pokhara")
-            if (response is Outcome.Success) {
-                currentWeatherData.value = response.data
 
-            }
-        }
-    }
-
-    fun onFetchForecastedWeatherData() {
+    private fun fetchDefaultLocationWeatherData() {
+        val location = deviceRegionUseCase.invoke()
         viewModelScope.launch {
-            val response = fetchHourlyForecastDataUseCase.invoke("Pokhara", 3)
+            val response =
+                fetchHourlyForecastDataUseCase.invoke(location, 3)
             if (response is Outcome.Success) {
                 filterForecastedWeatherResult(response.data)
             }
@@ -46,7 +40,7 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    private fun filterForecastedWeatherResult(result: List<WeatherData.Daily>) {
+    fun filterForecastedWeatherResult(result: List<WeatherData.Daily>) {
         val filteredHourlyData = result[0].hourlyData?.toMutableList()
         filteredHourlyData?.removeIf {
             TimeUnit.SECONDS.toMillis(it.timeEpoch) < getSystemCurrentTimeInMillisUseCase.invoke()

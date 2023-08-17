@@ -61,7 +61,7 @@ class WeatherDetailViewModel @Inject constructor(
         favoriteLocationModel = locationString.toFavoriteLocationModel()
         viewModelScope.launch {
             val response =
-                fetchHourlyForecastDataUseCase.invoke(favoriteLocationModel.getDisplayName(), 3)
+                fetchHourlyForecastDataUseCase.invoke(favoriteLocationModel.getDisplayName(), 5)
             if (response is Outcome.Success) {
                 filterForecastedWeatherResult(response.data)
                 checkIfIsFavorite(response.data.firstOrNull()?.getIdentifier() ?: "")

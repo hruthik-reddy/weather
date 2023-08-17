@@ -1,12 +1,16 @@
 package global.x.weather.presentation.screen.favorites
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -47,7 +51,7 @@ fun FavoriteScreen(
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         CenterContentTopAppBar(
-            title = { Text(stringResource(id = R.string.title_favorites)) },
+            title = { Text(stringResource(id = R.string.title_favorites), color = Color.Gray) },
             startIcon = ImageVector.vectorResource(id = R.drawable.ic_back),
             onStartIconClicked = onBackIconClicked
         )
@@ -130,10 +134,11 @@ private fun Content(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_calendar),
                 contentDescription = stringResource(
                     id = R.string.content_description_date
-                )
+                ),
+                tint = Color.Gray
             )
             TinyHorizontalSpacer()
-            Text(dateState.value ?: "")
+            Text(dateState.value ?: "", color = Color.Gray)
         }
 
         XLargeVerticalSpacer()
@@ -163,8 +168,15 @@ private fun FavoriteLocationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(data.getDisplayName())
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.width(150.dp)) {
+                Text(data.getDisplayName())
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                    .weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 SimpleWeatherStat(
                     stat = String.format(
                         Locale.ENGLISH,
@@ -174,7 +186,6 @@ private fun FavoriteLocationItem(
                     icon = { SimpleTemperature() },
                     title = null
                 )
-                MediumHorizontalSpacer()
                 SimpleWeatherStat(
                     stat = String.format(
                         Locale.ENGLISH,
@@ -184,7 +195,6 @@ private fun FavoriteLocationItem(
                     icon = { SimpleHumidity() },
                     title = null
                 )
-                MediumHorizontalSpacer()
                 SimpleWeatherStat(
                     stat = String.format(
                         Locale.ENGLISH,

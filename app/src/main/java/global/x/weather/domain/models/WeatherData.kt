@@ -7,6 +7,10 @@ sealed interface WeatherData {
     val localTime: String
     val localTimeEpoch: Long
 
+    fun getIdentifier(): String {
+        return "$location $region $country"
+    }
+
     data class Hourly(
         override val location: String,
         override val region: String,
@@ -30,7 +34,6 @@ sealed interface WeatherData {
         val snowingChance: Int
 
 
-
     ) : WeatherData
 
     data class Daily(
@@ -40,7 +43,7 @@ sealed interface WeatherData {
         override val localTime: String,
         override val localTimeEpoch: Long,
         //daily weather data
-
+        val date: String,
         val updatedAtEpoch: Long,
         val updatedAtTimeString: String,
         val tempAverage: Float,

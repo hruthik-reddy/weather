@@ -19,7 +19,7 @@ data class DailyForecastApiResponse(
                 country = location.country,
                 localTime = location.localTime,
                 localTimeEpoch = location.localTimeEpoch,
-
+                date = dailyForecast.date,
                 //weather data
                 updatedAtEpoch = current.updatedAtEpoch,
                 updatedAtTimeString = current.updatedAtTimeString,

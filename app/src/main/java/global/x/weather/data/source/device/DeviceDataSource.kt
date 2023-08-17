@@ -2,66 +2,72 @@ package global.x.weather.data.source.device
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
+import global.x.weather.data.source.device.model.SavedLocationModel
+import java.util.TimeZone
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DeviceDataSource @Inject constructor(@ApplicationContext private val context: Context) {
     companion object {
-        const val PREFERENCE_KEY = "device-preference-sdlk23p"
-        const val PRIMARY_CITY_KEY = "primary-asdli24"
-        const val SECONDARY_CITIES_KEY = "secondary-l3i430"
-        const val CITY_ITEM_DELIMITER = ";"
+        const val PREFERENCE_KEY = "devids13ce-p24refer1212ence-sdlk23p"
+        const val SAVED_LOCATION_KEY = "s3oaved-12locu4atio3n-lj2k430asd"
     }
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE)
 
-    fun getPrimaryCity(): String {
-        return sharedPreferences.getString(PRIMARY_CITY_KEY, "") ?: ""
-    }
-
-    fun setPrimaryCity(city: String) {
-        sharedPreferences.edit().putString(PRIMARY_CITY_KEY, city).apply()
-    }
-
-    fun getSecondaryCities(): List<String> {
-        with(sharedPreferences.getString(SECONDARY_CITIES_KEY, "")?.lowercase() ?: "") {
-            return if (this.isNotEmpty()) this.split(";") else listOf()
-        }
-    }
-
-    fun updateSecondaryCities(cities: List<String>) {
-        if (getSecondaryCities().isEmpty()) {
-            val sanitizedList = cities.map {
-                it.lowercase()
+    fun updateSavedLocations(locations: List<SavedLocationModel>) {
+        getSavedLocations().toMutableList().apply {
+            addAll(locations)
+            val converter = Gson()
+            val stringSet = this.map {
+                converter.toJson(it)
             }.toSet()
-            sharedPreferences.edit().putString(
-                SECONDARY_CITIES_KEY, sanitizedList.joinToString(separator = CITY_ITEM_DELIMITER)
-            ).apply()
-        } else {
-            val newList = cities.map {
-                it.lowercase()
-            }.toMutableSet()
-
-            newList.removeIf { newCity ->
-                getSecondaryCities().contains(newCity.lowercase())
-            }
-            newList.addAll(getSecondaryCities())
-            sharedPreferences.edit().putString(
-                SECONDARY_CITIES_KEY,
-                newList.joinToString(separator = CITY_ITEM_DELIMITER).lowercase()
+            sharedPreferences.edit().putStringSet(
+                SAVED_LOCATION_KEY, stringSet
             ).apply()
         }
 
     }
 
-    fun resetPrimaryCity() {
-        sharedPreferences.edit().putString(PRIMARY_CITY_KEY, "").apply()
+    fun getSavedLocations(): List<SavedLocationModel> {
+        val stringSet = sharedPreferences.getStringSet(SAVED_LOCATION_KEY, emptySet())
+        val gsonConverter = Gson()
+        if (stringSet.isNullOrEmpty()) return emptyList()
+        return stringSet.filterNotNull().map {
+            gsonConverter.fromJson(it, SavedLocationModel::class.java)
+        }.sortedBy { it.name }
     }
 
-    fun resetSecondaryCities() {
-        sharedPreferences.edit().putString(SECONDARY_CITIES_KEY, "").apply()
+    fun deleteSavedLocations(locations: List<SavedLocationModel>) {
+        val updatedList = getSavedLocations().toMutableList().also {
+            it.removeIf { locationModel ->
+                locations.contains(locationModel)
+            }
+        }
+        clearSavedLocations()
+        updateSavedLocations(updatedList)
+    }
+
+    fun clearSavedLocations() {
+        sharedPreferences.edit().putStringSet(SAVED_LOCATION_KEY, emptySet()).apply()
+    }
+
+    fun getDefaultSavedLocation(): SavedLocationModel? {
+        return getSavedLocations().firstOrNull { locationModel ->
+            locationModel.isDefault
+        }
+    }
+
+
+    fun getDeviceRegion(): String {
+        return TimeZone.getDefault().id
+    }
+
+    fun getSystemCurrentTimeInMillis(): Long {
+        return System.currentTimeMillis()
     }
 }

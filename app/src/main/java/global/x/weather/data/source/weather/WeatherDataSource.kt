@@ -1,11 +1,13 @@
-package global.x.weather.data.source
+package global.x.weather.data.source.weather
 
+import android.util.Log
+import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.SearchResultModel
+import global.x.weather.domain.models.WeatherData
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import global.x.weather.domain.Outcome
-import global.x.weather.domain.models.WeatherData
-import okhttp3.Interceptor
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,7 +17,7 @@ class WeatherDataSource @Inject constructor() {
     companion object {
         const val TEST_BASE_URL = "https://jsonplaceholder.typicode.com/"
         const val API_BASE_URL = "https://api.weatherapi.com/v1/"
-        const val API_KEY = ""
+        const val API_KEY = "9b13427bccca4794814152219230808"
     }
 
     private val weatherApiService: WeatherApiService
@@ -43,6 +45,7 @@ class WeatherDataSource @Inject constructor() {
 
     suspend fun getCurrentWeatherData(city: String): Outcome<WeatherData.Daily> {
         val response = weatherApiService.getCurrentWeatherData(city)
+        Log.e("API Response", response.body().toString())
         if (response.isSuccessful) {
             response.body()?.toWeatherData()?.let {
                 return Outcome.Success(it)
@@ -58,11 +61,28 @@ class WeatherDataSource @Inject constructor() {
         noOfDays: Int
     ): Outcome<List<WeatherData.Daily>> {
         val response = weatherApiService.getHourlyForecastData(city, noOfDays)
+        Log.e("API Response", response.body().toString())
         if (response.isSuccessful) {
             response.body()?.toForecastData()?.let {
                 return Outcome.Success(it)
             }
         } else {
+            return Outcome.Error(Exception(response.errorBody().toString()))
+        }
+        return Outcome.Error(Exception("Unknown error"))
+    }
+
+    suspend fun search(city: String): Outcome<List<SearchResultModel>> {
+        val response = weatherApiService.searchCity(city)
+        if (response.isSuccessful) {
+            response.body()?.let { responseBody ->
+                return Outcome.Success(responseBody.map { item ->
+                    item.toSearchResultModel()
+                })
+            }
+
+        } else {
+
             return Outcome.Error(Exception(response.errorBody().toString()))
         }
         return Outcome.Error(Exception("Unknown error"))

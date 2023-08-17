@@ -1,7 +1,8 @@
 package global.x.weather.data.repositories
 
-import global.x.weather.data.source.WeatherDataSource
+import global.x.weather.data.source.weather.WeatherDataSource
 import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.SearchResultModel
 import global.x.weather.domain.models.WeatherData
 import global.x.weather.domain.use_cases.weather.WeatherRepository
 import javax.inject.Inject
@@ -19,5 +20,9 @@ class WeatherRepositoryImpl @Inject constructor(private val weatherDataSource: W
         noOfDays: Int
     ): Outcome<List<WeatherData.Daily>> {
         return weatherDataSource.getHourlyForecastData(city, noOfDays)
+    }
+
+    override suspend fun search(city: String): Outcome<List<SearchResultModel>> {
+        return weatherDataSource.search(city)
     }
 }

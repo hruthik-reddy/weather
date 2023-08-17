@@ -1,63 +1,134 @@
 package global.x.weather.presentation.screen.home
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import global.x.weather.domain.Outcome
+import global.x.weather.domain.models.FavoriteLocationModel
 import global.x.weather.domain.models.WeatherData
-import global.x.weather.domain.use_cases.device.GetPrimaryCityUseCase
-import global.x.weather.domain.use_cases.device.GetSecondaryCitiesUseCase
-import global.x.weather.domain.use_cases.device.ResetPrimaryCityUseCase
-import global.x.weather.domain.use_cases.device.ResetSecondaryCityUseCase
-import global.x.weather.domain.use_cases.device.SetPrimaryCityUseCase
-import global.x.weather.domain.use_cases.device.UpdateSecondaryCitiesUseCase
-import global.x.weather.domain.use_cases.weather.FetchCurrentWeatherDataUseCase
+import global.x.weather.domain.use_cases.device.GetDefaultSavedLocationUseCase
+import global.x.weather.domain.use_cases.device.GetDeviceRegionUseCase
+import global.x.weather.domain.use_cases.device.GetSavedLocationsUseCase
+import global.x.weather.domain.use_cases.device.GetSystemCurrentTimeInMillisUseCase
+import global.x.weather.domain.use_cases.device.UpdateSavedLocationsUseCase
 import global.x.weather.domain.use_cases.weather.FetchHourlyForecastDataUseCase
+import global.x.weather.domain.use_cases.weather.SearchCityUseCase
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val fetchCurrentWeatherDataUseCase: FetchCurrentWeatherDataUseCase,
-    private val fetchHourlyForecastDataUseCase: FetchHourlyForecastDataUseCase,
-    private val setPrimaryCityUseCase: SetPrimaryCityUseCase,
-    private val updateSecondaryCitiesUseCase: UpdateSecondaryCitiesUseCase,
-    private val getPrimaryCityUseCase: GetPrimaryCityUseCase,
-    private val resetPrimaryCityUseCase: ResetPrimaryCityUseCase,
-    private val resetSecondaryCityUseCase: ResetSecondaryCityUseCase,
-    private val getSecondaryCitiesUseCase: GetSecondaryCitiesUseCase
+open class HomeViewModel @Inject constructor(
+    val savedStateHandle: SavedStateHandle,
+    val fetchHourlyForecastDataUseCase: FetchHourlyForecastDataUseCase,
+    private val getSystemCurrentTimeInMillisUseCase: GetSystemCurrentTimeInMillisUseCase,
+    private val deviceRegionUseCase: GetDeviceRegionUseCase,
+    private val getDefaultSavedLocationUseCase: GetDefaultSavedLocationUseCase,
+    val getSavedLocationsUseCase: GetSavedLocationsUseCase,
+    val searchCityUseCase: SearchCityUseCase,
+    val updateSavedLocationsUseCase: UpdateSavedLocationsUseCase
 ) : ViewModel() {
-    val currentWeatherData: MutableLiveData<WeatherData.Daily> = MutableLiveData()
     val forecastedWeatherData: MutableLiveData<List<WeatherData.Daily>> = MutableLiveData()
-    val testString: MutableLiveData<String> = MutableLiveData("")
 
-    fun onFetchCurrentWeatherData() {
+    init {
+        if (getDefaultSavedLocationUseCase.invoke() == null) {
+            refreshFavoriteLocationData()
+        } else {
+            fetchDefaultLocationWeatherData()
+
+        }
+    }
+
+
+    private fun fetchDefaultLocationWeatherData() {
+        var location = getDefaultSavedLocationUseCase.invoke()
+        if (location == null) {
+            refreshFavoriteLocationData()
+            location = getDefaultSavedLocationUseCase.invoke()
+        }
+        val searchString = "${location?.name} ${location?.country}"
         viewModelScope.launch {
-            val response = fetchCurrentWeatherDataUseCase.invoke("Pokhara")
+            val response =
+                fetchHourlyForecastDataUseCase.invoke(searchString, 5)
             if (response is Outcome.Success) {
-                currentWeatherData.value = response.data
-                currentWeatherData.let {
-                    it.value?.let {
-                        testString.value = it.localTimeEpoch.toString()
-                    }
-                }
+                filterForecastedWeatherResult(response.data)
             }
         }
     }
 
-    fun onFetchForecastedWeatherData() {
+
+    fun filterForecastedWeatherResult(result: List<WeatherData.Daily>) {
+        val filteredHourlyData = result[0].hourlyData?.toMutableList()
+        filteredHourlyData?.removeIf {
+            TimeUnit.SECONDS.toMillis(it.timeEpoch) < getSystemCurrentTimeInMillisUseCase.invoke()
+        }
+        val newList = mutableListOf<WeatherData.Daily>()
+        result.forEachIndexed { index, item ->
+            newList.add(
+                WeatherData.Daily(
+                    location = item.location,
+                    country = item.country,
+                    localTime = item.localTime,
+                    localTimeEpoch = item.localTimeEpoch,
+                    updatedAtEpoch = item.updatedAtEpoch,
+                    updatedAtTimeString = item.updatedAtTimeString,
+                    tempAverage = item.tempAverage,
+                    tempMinimum = item.tempMinimum,
+                    tempMaximum = item.tempMaximum,
+                    isDay = item.isDay,
+                    conditionDescription = item.conditionDescription,
+                    windSpeed = item.windSpeed,
+                    windDegree = item.windDegree,
+                    precipitation = item.precipitation,
+                    humidity = item.humidity,
+                    cloud = item.cloud,
+                    hourlyData = if (index == 0) filteredHourlyData else item.hourlyData,
+                    region = item.region,
+                    date = item.date
+                )
+            )
+        }
+        forecastedWeatherData.value = newList
+
+    }
+
+    private fun refreshFavoriteLocationData() {
+        val deviceLocation = deviceRegionUseCase.invoke()
         viewModelScope.launch {
-            val response = fetchHourlyForecastDataUseCase.invoke("Pokhara", 3)
-            if (response is Outcome.Success) {
-                forecastedWeatherData.value = response.data
-                forecastedWeatherData.let {
-                    it.value?.let {
-                        testString.value = it.size.toString()
+            val result = searchCityUseCase.invoke(deviceLocation)
+            when (result) {
+                is Outcome.Success -> {
+                    val searchResultModel = result.data.firstOrNull()
+                    if (searchResultModel == null) {
+                        Log.e("XWeather", "Location data could not be determined")
+                    } else {
+                        updateSavedLocationsUseCase.invoke(
+                            listOf(
+                                FavoriteLocationModel(
+                                    id = searchResultModel.id,
+                                    name = searchResultModel.name,
+                                    region = searchResultModel.region,
+                                    country = searchResultModel.country,
+                                    isDefault = true
+                                )
+                            )
+                        )
+                        Log.e("XWeather", "Location data successfully saved")
+                        fetchDefaultLocationWeatherData()
                     }
+                }
+
+                is Outcome.Error -> {
+                    Log.e("XWeather", "Unknown network error")
                 }
             }
         }
+
     }
+
 
 }
+

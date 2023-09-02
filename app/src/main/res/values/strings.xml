@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">X Weather</string>
+    <string name="app_name">Weather</string>
 
     <!-- Content Description -->
     <string name="content_description_saved_regions">Saved regions</string>
